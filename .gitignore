@@ -52,3 +52,6 @@ gensim_model*
 
 # hdf5 weights
 *.h5
+
+# pyc
+*.pyc
