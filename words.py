@@ -47,6 +47,25 @@ def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 3):
     sentences_rep = (list(map(replace_num, s)) for s in sentences)
     return [rm_stop_words(s) for s in sentences_rep if len(rm_stop_words(s))>=min_words]
 
+def substitute_word(word, permitted_words, unknown = 'UNK'):
+    return word if word in permitted_words else unknown
+
+def reduced_sentence(sentence, permitted_words):
+    return [substitute_word(word, permitted_words) for word in sentence]
+
+def reduce_dictionary(sentences, permitted_words, min_words=2):
+    for sentence in sentences:
+        new_sentence = reduced_sentence(sentence, permitted_words)
+        if len(new_sentence) >= min_words:
+            yield new_sentence
+
+def sentence_vector(model, sentence, permitted_words):
+    if type(sentence) == str:
+        sent_list = sentence.split()
+    else:
+        sent_list = sentence
+    return model.infer_vector(reduced_sentence(sent_list, permitted_words)) 
+            
 def copy_pdfs_with_few_words(txt_folder, pdf_folder, out_folder, txt_out_folder, thres):
     for txt_file in os.listdir(txt_folder):
         txt = open(join_path(txt_folder,txt_file)).read()

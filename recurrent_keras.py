@@ -10,9 +10,9 @@ import pickle
 
 
 # fix random seed for reproducibility
-np.random.seed(7)
+np.random.seed(86)
 
-num_sentences = 100
+num_sentences = 200
 
 # load prepared data
 with open('embedded_docs.p') as f:
