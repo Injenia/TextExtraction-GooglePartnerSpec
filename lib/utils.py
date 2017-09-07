@@ -1,5 +1,9 @@
+# This Python file uses the following encoding: utf-8
 from __future__ import division
+
 from google.cloud import storage
+from shutil import copyfile, rmtree
+from pathlib2 import Path
 
 import os
 import glob
@@ -7,7 +11,6 @@ import json
 import pickle
 import csv
 import zipfile
-
 
 # Files
 def ensure_dir_exists(directory):
@@ -27,6 +30,19 @@ def get_files_by_extensions(directory, extensions):
 def get_immediate_subdirectories(a_dir):
     return [name for name in os.listdir(a_dir)
             if os.path.isdir(os.path.join(a_dir, name)) and not name.startswith(".")]
+
+
+def rm_dir(dir):
+    os.path.exists(dir) and rmtree(dir)
+    
+def move_flattened_files(src_dir, out_dir, filt):
+    p = Path(src_dir)
+    if p.is_dir():
+        for f in p.iterdir():
+            if f.is_file() and filt(f):
+                copyfile(str(f.absolute()),str(out_dir + u'/' + f.name))
+            else:
+                move_flattened_files(str(f.absolute()), out_dir, filt)
 
 
 #JSON

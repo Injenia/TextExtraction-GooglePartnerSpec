@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 import pickle
 import argparse
 from os import path

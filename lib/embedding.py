@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 from gensim import utils
 from gensim.models.doc2vec import LabeledSentence
 from gensim.models import Doc2Vec

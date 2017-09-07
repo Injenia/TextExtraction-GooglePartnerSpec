@@ -1,35 +1,57 @@
+# This Python file uses the following encoding: utf-8
 import re
 import os
 from shutil import copyfile
+import nltk
+from nltk.tokenize import WordPunctTokenizer
+#tokenizer = nltk.data.load('tokenizers/punkt/italian.pickle')
+from nltk.corpus import stopwords
+import string
+import codecs
 
+punctuation = set(string.punctuation)
+stop_words = set(stopwords.words('italian'))
+word_tokenizer = WordPunctTokenizer()
 join_path = os.path.join
 
-stop_words = open('/notebooks/dev/infocamere/git/stop_words.txt').read().split()
+#stop_words = open('/notebooks/dev/infocamere/git/stop_words.txt').read().split()
 
 def splitted_words(txt):
     return re.sub('[^\w]',' ',txt).split()
 
-def replace_digit(c, r = 'NUM'):
-    if c.isdigit():
-        return r
-    else:
-        return c
+def replace_num(word, num_repl=u'NUM', max_digits=1):
+    return num_repl if word.isnumeric() and len(word)>max_digits else word
+
+def replace_digit(c, r='NUM'):
+    return r if c.isdigit() else c
 
 def replace_digits(txt, r = 'NUM'):
     return ''.join(replace_digit(d, r) for d in txt)
 
+def replace_alnum(word, alnum_repl=u'ALPHANUM', max_digits=1):
+    return alnum_repl if re.search('\d', word) != None and len(word)>max_digits else word
+
+def contains_punctuation(word):
+    sw = set(word)
+    return len(sw-punctuation)<len(sw)
+
+def split_sents(doc):
+    return [s for s in re.split(u'[.;!?]', doc) if len(s)>0]
+
+'''
 def replace_num(word, r = 'NUM'):
     if r in word:
         return r
     else:
         return word
+'''
 
 def replace_evil_dots_and_underscores(txt):
-    no_cons = re.sub('([bcdfghjklmnpqrstvwxyz])\.', r'\1', txt)
-    no_nums = re.sub('(\d)\.', r'\1', no_cons)
-    no_nums = re.sub('\.(\d)', r'\1', no_nums)
-    no_maiusc = re.sub('([A-Z])\.', r'\1', no_nums)
-    no_underscores = re.sub('_', '', no_maiusc)
+    no_abbr = re.sub(u'([bcdfghjklmnpqrstvwxyz])\.', r'\1', txt)
+    no_nums = re.sub(u'(\d)\.', r'\1', no_abbr)
+    no_nums = re.sub(u'\.(\d)', r'\1', no_nums)
+    no_maiusc = re.sub(u'([A-Z])\.', r'\1', no_nums)
+    no_underscores = re.sub(u'_', '', no_maiusc)
     return no_underscores
 
 def rm_stop_words(words):
@@ -46,6 +68,21 @@ def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 2):
     sentences = map(splitted_words, splitted)
     sentences_rep = (list(map(replace_num, s)) for s in sentences)
     return [rm_stop_words(s) for s in sentences_rep if len(rm_stop_words(s))>=min_words]
+
+def tokenize_doc(doc, min_words=2):
+    txt = replace_evil_dots_and_underscores(doc)
+    #print txt
+    sents = split_sents(txt) #tokenizer.sentences_from_text(txt)
+    sents_words = word_tokenizer.tokenize_sents(sents)
+    splitted_sents = []
+    for sentence in sents_words:
+        sent = [replace_alnum(replace_num(word)) for word in sentence if not contains_punctuation(word) and word not in stop_words]
+        if len(sent)>=min_words:
+            splitted_sents.append(sent)
+    return splitted_sents
+
+def read_codec_file(filename, encoding='utf-8'):
+    return codecs.open(filename, encoding=encoding).read()
 
 def substitute_word(word, permitted_words, unknown = 'UNK'):
     return word if word in permitted_words else unknown

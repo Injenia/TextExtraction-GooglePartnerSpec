@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count 
 
