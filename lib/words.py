@@ -4,7 +4,7 @@ from shutil import copyfile
 
 join_path = os.path.join
 
-stop_words = open('stop_words.txt').read().split()
+stop_words = open('/notebooks/dev/infocamere/git/stop_words.txt').read().split()
 
 def splitted_words(txt):
     return re.sub('[^\w]',' ',txt).split()
@@ -41,7 +41,7 @@ def rm_underscores(words):
 def naive_split(txt, digit_replacement='NUM', split='.\n', min_words = 5):
     return [s for s in map(splitted_words, replace_digits(txt.lower(),digit_replacement).split(split)) if len(s)>=min_words]
 
-def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 3):
+def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 2):
     splitted = replace_digits(replace_evil_dots_and_underscores(txt).lower(),digit_replacement).split(split)
     sentences = map(splitted_words, splitted)
     sentences_rep = (list(map(replace_num, s)) for s in sentences)

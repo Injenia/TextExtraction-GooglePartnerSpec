@@ -1,7 +1,5 @@
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
 
-
-
 def print_cm(cm, labels, hide_zeroes=False, hide_diagonal=False, hide_threshold=None):
     """pretty print for confusion matrixes"""
     columnwidth = max([len(x) for x in labels]+[5]) # 5 is value length

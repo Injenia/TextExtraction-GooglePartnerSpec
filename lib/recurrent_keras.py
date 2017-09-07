@@ -15,7 +15,7 @@ np.random.seed(86)
 num_sentences = 200
 
 # load prepared data
-with open('embedded_docs.p') as f:
+with open('/notebooks/dev/infocamere/git/embedded_docs.p') as f:
     data, labels = pickle.load(f)
 
 
@@ -39,4 +39,4 @@ print("Accuracy: %.2f%%" % (scores[1]*100))
 
 
 # serialize weights to HDF5
-model.save_weights("keras_weights.h5")
+model.save_weights("/notebooks/dev/infocamere/git/models/keras_weights.h5")

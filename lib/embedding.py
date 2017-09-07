@@ -15,8 +15,8 @@ import pandas as pd
 
 # Creazione del dataset come sottoinsieme bilanciato dei documenti
 
-csv_filename = '../atti.csv'
-model_filename = 'gensim_model.d2v'
+csv_filename = '/notebooks/dev/infocamere/atti.csv'
+model_filename = '/notebooks/dev/infocamere/git/models/gensim_model.d2v'
 
 df = pd.read_csv(csv_filename)
 
@@ -149,6 +149,6 @@ docs, labels = build_dataset(model, df_balanced, first_10000_words)
 label_map = {'costitutivo':1, 'non_costitutivo':0}
 labels_n = [label_map[l] for l in labels]
 
-with open("embedded_docs.p", "w") as fout:
+with open("/notebooks/dev/infocamere/git/embedded_docs.p", "w") as fout:
     pickle.dump([docs, labels_n], fout)
 
