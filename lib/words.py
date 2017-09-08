@@ -22,6 +22,9 @@ def splitted_words(txt):
 def replace_num(word, num_repl=u'NUM', max_digits=1):
     return num_repl if word.isnumeric() and len(word)>max_digits else word
 
+def replace_num_old(word, num_repl=u'NUM'):
+    return num_repl if num_repl in word else word
+
 def replace_digit(c, r='NUM'):
     return r if c.isdigit() else c
 
@@ -66,17 +69,24 @@ def naive_split(txt, digit_replacement='NUM', split='.\n', min_words = 5):
 def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 2):
     splitted = replace_digits(replace_evil_dots_and_underscores(txt).lower(),digit_replacement).split(split)
     sentences = map(splitted_words, splitted)
-    sentences_rep = (list(map(replace_num, s)) for s in sentences)
+    sentences_rep = (list(map(replace_num_old, s)) for s in sentences)
     return [rm_stop_words(s) for s in sentences_rep if len(rm_stop_words(s))>=min_words]
 
-def tokenize_doc(doc, min_words=2):
-    txt = replace_evil_dots_and_underscores(doc)
+def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
+    if type(doc) == str:
+        txt = doc.decode('utf-8')
+    elif type(doc) == unicode:
+        txt = doc
+    clean_txt = replace_evil_dots_and_underscores(txt)
     #print txt
-    sents = split_sents(txt) #tokenizer.sentences_from_text(txt)
+    sents = split_sents(clean_txt) #tokenizer.sentences_from_text(clean_txt)
     sents_words = word_tokenizer.tokenize_sents(sents)
     splitted_sents = []
     for sentence in sents_words:
-        sent = [replace_alnum(replace_num(word)) for word in sentence if not contains_punctuation(word) and word not in stop_words]
+        if replace_nums:
+            sent = [replace_alnum(replace_num(word)) for word in sentence if not contains_punctuation(word) and word not in stop_words]
+        else:
+            sent = [word for word in sentence if not contains_punctuation(word) and word not in stop_words]
         if len(sent)>=min_words:
             splitted_sents.append(sent)
     return splitted_sents
