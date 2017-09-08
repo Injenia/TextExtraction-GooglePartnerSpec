@@ -13,27 +13,8 @@ import pickle
 import random
 import pandas as pd
 
-
-# Creazione del dataset come sottoinsieme bilanciato dei documenti
-
 csv_filename = '/notebooks/dev/infocamere/atti.csv'
-model_filename = '/notebooks/dev/infocamere/git/models/gensim_model.d2v'
-
-df = pd.read_csv(csv_filename)
-
-size_nc = len(df.loc[df['label'] == 'non_costitutivo'].groupby('filename'))
-
-grouped = df.loc[df['label'] == 'costitutivo'].groupby(df["filename"])
-dfs = [g[1] for g in list(grouped)[:size_nc]]
-
-grouped_nc = df.loc[df['label'] == 'non_costitutivo'].groupby(df["filename"])
-dfs_nc = [g[1] for g in list(grouped_nc)]
-
-df_balanced = pd.concat(dfs + dfs_nc)
-
-pd_sentences = df_balanced['sentence']
-
-print "DF created"
+model_filename = '/notebooks/dev/infocamere/git/models/gensim_5000_model.d2v' #'/notebooks/dev/infocamere/git/models/gensim_model.d2v'
 
 
 # Creazione degli embedding
@@ -81,10 +62,9 @@ def build_embedding(sentences, refresh=False, epochs = 10):
         model = Doc2Vec.load(model_filename)
     else:
         model = Doc2Vec(min_count=1, window=10, size=100, sample=1e-5, negative=5, workers=2)
+        print 'Build this f***ing vocabulary!!!'
         model.build_vocab(sentences)
         print 'Vocabulary built'
-        #for epoch in range(5):
-        #    print 'Epoch', epoch
         model.train(sentences, model.corpus_count, epochs = epochs)
         model.save(model_filename)
         print 'Model saved'
@@ -110,15 +90,6 @@ def reduce_dictionary(sentences, permitted_words, min_words=2):
             
 def sentence_vector(model, sentence, permitted_words):
     return model.infer_vector(reduced_sentence(sentence.split(' '), permitted_words))
-
-d = build_dictionary(s.split() for s in pd_sentences)
-first_10000_words = first_n_words(d, 10000)
-
-#filtered_sentences = reduce_dictionary((s.split() for s in pd_sentences), first_10000_words)
-#filtered_sentences_list = list(filtered_sentences)
-
-#model = build_embedding(list(iter_sentences(filtered_sentences)))
-model = build_embedding(None)
 
 # Costruzione del dataset
 
@@ -146,10 +117,37 @@ def build_dataset(model, df, permitted_words):
         docs.append(curdoc)
     return docs, labels
 
-docs, labels = build_dataset(model, df_balanced, first_10000_words)
-label_map = {'costitutivo':1, 'non_costitutivo':0}
-labels_n = [label_map[l] for l in labels]
+if __name__ == '__main__':
+    # Creazione del dataset come sottoinsieme bilanciato dei documenti
+    df = pd.read_csv(csv_filename, encoding='utf-8')
 
-with open("/notebooks/dev/infocamere/git/embedded_docs.p", "w") as fout:
-    pickle.dump([docs, labels_n], fout)
+    size_nc = len(df.loc[df['label'] == 'non_costitutivo'].groupby('filename'))
+
+    grouped = df.loc[df['label'] == 'costitutivo'].groupby(df["filename"])
+    dfs = [g[1] for g in list(grouped)[:size_nc]]
+
+    grouped_nc = df.loc[df['label'] == 'non_costitutivo'].groupby(df["filename"])
+    dfs_nc = [g[1] for g in list(grouped_nc)]
+
+    df_balanced = pd.concat(dfs + dfs_nc)
+
+    pd_sentences = df_balanced['sentence']
+
+    print "DF created"
+    
+    d = build_dictionary(s.split() for s in pd_sentences)
+    permitted_words = first_n_words(d, 5000)
+
+    filtered_sentences = reduce_dictionary((s.split() for s in pd_sentences), permitted_words)
+    #filtered_sentences_list = list(filtered_sentences)
+
+    model = build_embedding(list(iter_sentences(filtered_sentences)))
+    #model = build_embedding(None)
+
+    docs, labels = build_dataset(model, df_balanced, permitted_words)
+    label_map = {'costitutivo':1, 'non_costitutivo':0}
+    labels_n = [label_map[l] for l in labels]
+
+    with open("/notebooks/dev/infocamere/git/embedded_docs.p", "w") as fout:
+        pickle.dump([docs, labels_n], fout)
 
