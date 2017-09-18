@@ -103,19 +103,6 @@ def substitute_word(word, permitted_words, unknown = 'UNK'):
 
 def reduced_sentence(sentence, permitted_words):
     return [substitute_word(word, permitted_words) for word in sentence]
-
-def reduce_dictionary(sentences, permitted_words, min_words=2):
-    for sentence in sentences:
-        new_sentence = reduced_sentence(sentence, permitted_words)
-        if len(new_sentence) >= min_words:
-            yield new_sentence
-
-def sentence_vector(model, sentence, permitted_words):
-    if type(sentence) == str:
-        sent_list = sentence.split()
-    else:
-        sent_list = sentence
-    return model.infer_vector(reduced_sentence(sent_list, permitted_words)) 
             
 def copy_pdfs_with_few_words(txt_folder, pdf_folder, out_folder, txt_out_folder, thres):
     for txt_file in os.listdir(txt_folder):

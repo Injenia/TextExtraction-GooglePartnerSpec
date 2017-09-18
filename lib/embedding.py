@@ -13,10 +13,6 @@ import pickle
 import random
 import pandas as pd
 
-csv_filename = '/notebooks/dev/infocamere/atti.csv'
-model_filename = '../models/gensim_5000_model.d2v'
-
-
 # Creazione degli embedding
 
 def build_dictionary(sentences):
@@ -57,12 +53,11 @@ def iter_sentences(sents):
 
 # Modello dell'embedding
 
-def build_embedding(sentences, refresh=False, epochs = 10):
+def build_embedding(sentences, model_filename, refresh=False, epochs = 10):
     if not refresh and os.path.exists(model_filename):
         model = Doc2Vec.load(model_filename)
     else:
         model = Doc2Vec(min_count=1, window=10, size=100, sample=1e-5, negative=5, workers=2)
-        print 'Build this f***ing vocabulary!!!'
         model.build_vocab(sentences)
         print 'Vocabulary built'
         model.train(sentences, model.corpus_count, epochs = epochs)
@@ -89,7 +84,14 @@ def reduce_dictionary(sentences, permitted_words, min_words=2):
             yield new_sentence
             
 def sentence_vector(model, sentence, permitted_words):
-    return model.infer_vector(reduced_sentence(sentence.split(' '), permitted_words))
+    if type(sentence) == str:
+        sent_list = sentence.split()
+    else:
+        sent_list = sentence
+    return model.infer_vector(reduced_sentence(sent_list, permitted_words)) 
+
+def embed_document(model, doc, permitted_words):
+    return [sentence_vector(model, sentence, permitted_words) for sentence in doc]
 
 # Costruzione del dataset
 
@@ -118,6 +120,9 @@ def build_dataset(model, df, permitted_words):
     return docs, labels
 
 if __name__ == '__main__':
+    csv_filename = '/notebooks/dev/infocamere/atti.csv'
+    model_filename = '../models/gensim_5000_model.d2v'
+    
     # Creazione del dataset come sottoinsieme bilanciato dei documenti
     df = pd.read_csv(csv_filename, encoding='utf-8')
 
@@ -141,7 +146,7 @@ if __name__ == '__main__':
     filtered_sentences = reduce_dictionary((s.split() for s in pd_sentences), permitted_words)
     #filtered_sentences_list = list(filtered_sentences)
 
-    model = build_embedding(list(iter_sentences(filtered_sentences)))
+    model = build_embedding(list(iter_sentences(filtered_sentences)), model_filename)
     #model = build_embedding(None)
 
     docs, labels = build_dataset(model, df_balanced, permitted_words)
