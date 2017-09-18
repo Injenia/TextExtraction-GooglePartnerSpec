@@ -13,6 +13,8 @@ import json
 def predict_documents_str(filenames, txts, gensim_model, keras_model, permitted_words):
     filtered_filenames = [f for f,t in zip(filenames, txts) if (t != None and len(t)>0)]
     not_empty_txts =  [t for t in txts if  (t != None and len(t)>0)]
+    if len(filtered_filenames) == 0:
+        return [], []
     
     splitted_txts = (tokenize_doc(txt) for txt in not_empty_txts) 
     filtered_txts = (list(reduce_dictionary(document, permitted_words)) for document in splitted_txts)

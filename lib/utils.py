@@ -39,7 +39,7 @@ def move_flattened_files(src_dir, out_dir, filt):
     p = Path(src_dir)
     if p.is_dir():
         for f in p.iterdir():
-            if f.is_file() and filt(f):
+            if f.is_file() and filt(f.absolute()):
                 copyfile(str(f.absolute()),str(out_dir + u'/' + f.name))
             else:
                 move_flattened_files(str(f.absolute()), out_dir, filt)

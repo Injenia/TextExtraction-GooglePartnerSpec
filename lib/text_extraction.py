@@ -26,14 +26,14 @@ def convert_to_txt(img):
     except:
         return ""   
 
-def extract_text(f, do_ocr, png_dir='../tmp', min_words=150, pages=5):
+def extract_text(f, do_ocr=False, png_dir='../tmp', min_words=150, pages=5):
     try:
         text = textract.process(f)
         if len(splitted_words(text)) <= min_words:
             #print f, u"è una scansione"
             if not do_ocr:
                 return ''
-            print "Estrazione testo con Vision API."
+            print f, "Estrazione testo con Vision API."
             rm_dir(png_dir)
             os.mkdir(png_dir)
             # out-10.png
