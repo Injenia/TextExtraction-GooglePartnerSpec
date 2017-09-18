@@ -39,7 +39,8 @@ def extract_text(f, do_ocr, png_dir, min_words, pages):
             # out-10.png
             call(("convert -verbose -density 300 %s -quality 100 %s" 
                   % (f, os.path.join(png_dir,os.path.basename(f)[:-3]+'png'))).split(' '))
-            images = os.listdir(png_dir)
+            # os.listdir is not ordered by name, this fixes it
+            images = sorted(os.listdir(png_dir), key=lambda item: (int(item.partition('-')[2].partition('.')[0])))
                         
             if len(images) > 0:
                 res = ""
