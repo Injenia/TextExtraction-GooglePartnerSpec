@@ -14,7 +14,7 @@ import random
 import pandas as pd
 
 csv_filename = '/notebooks/dev/infocamere/atti.csv'
-model_filename = '/notebooks/dev/infocamere/git/models/gensim_5000_model.d2v' #'/notebooks/dev/infocamere/git/models/gensim_model.d2v'
+model_filename = '../models/gensim_5000_model.d2v'
 
 
 # Creazione degli embedding

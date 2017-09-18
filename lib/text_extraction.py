@@ -26,7 +26,7 @@ def convert_to_txt(img):
     except:
         return ""   
 
-def extract_text(f, do_ocr, png_dir, min_words, pages):
+def extract_text(f, do_ocr, png_dir='../tmp', min_words=150, pages=5):
     try:
         text = textract.process(f)
         if len(splitted_words(text)) <= min_words:
