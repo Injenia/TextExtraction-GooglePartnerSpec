@@ -76,13 +76,17 @@ def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 2):
     sentences_rep = (list(map(replace_num_old, s)) for s in sentences)
     return [rm_stop_words(s) for s in sentences_rep if len(rm_stop_words(s))>=min_words]
 
-def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
+def sentences_doc(doc):
     if type(doc) == str:
         txt = doc.decode('utf-8')
     elif type(doc) == unicode:
         txt = doc
     clean_txt = replace_evil_dots_and_underscores(txt)
-    sents = split_sents(clean_txt) #tokenizer.sentences_from_text(clean_txt)
+    return split_sents(clean_txt) 
+
+def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
+    sents = sentences_doc(doc)
+    #tokenizer.sentences_from_text(clean_txt)
     sents_words = word_tokenizer.tokenize_sents(sents)
     splitted_sents = []
     for sentence in sents_words:
