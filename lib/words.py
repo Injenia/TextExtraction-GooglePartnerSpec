@@ -14,7 +14,18 @@ stop_words = set(stopwords.words('italian'))
 word_tokenizer = WordPunctTokenizer()
 join_path = os.path.join
 allowed_lower_chars = set(u'abcdefghijklmnopqrstuvwxyz1234567890àèéùòì')
+allowed_lower_chars_punct = set(u'abcdefghijklmnopqrstuvwxyz1234567890àèéùòì!#$%&()*"+,-./:;<=>?@[\\]^_\'`{|}~ \t\n\r')
 #stop_words = open('/notebooks/dev/infocamere/git/stop_words.txt').read().split()
+
+def to_utf8(txt):
+    return txt.decode('utf-8') if type(txt) == str else txt
+
+def compress_blanks(s):
+    return re.sub( ur'\s+', u' ', s).strip()
+
+def clean_string(s):
+    us = to_utf8(s)
+    return compress_blanks(u''.join(c if c.lower() in allowed_lower_chars_punct else ' ' for c in us))
 
 def splitted_words(txt):
     return re.sub('[^\w]',' ',txt).split()
@@ -77,10 +88,7 @@ def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 2):
     return [rm_stop_words(s) for s in sentences_rep if len(rm_stop_words(s))>=min_words]
 
 def sentences_doc(doc):
-    if type(doc) == str:
-        txt = doc.decode('utf-8')
-    elif type(doc) == unicode:
-        txt = doc
+    txt = clean_string(doc)
     clean_txt = replace_evil_dots_and_underscores(txt)
     return split_sents(clean_txt) 
 

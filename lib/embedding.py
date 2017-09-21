@@ -69,7 +69,7 @@ def build_embedding(sentences, model_filename, refresh=False, epochs = 10):
 def first_n_words(sentences, n):
     wc = word_counts(sentences)
     sorted_wc = sorted(wc.items(), key=operator.itemgetter(1))
-    return list(reversed([x[0] for x in sorted_wc[-n:]]))
+    return list(reversed([x for x in sorted_wc[-n:]]))
 
 
 def substitute_word(word, permitted_words, unknown = 'UNK'):
