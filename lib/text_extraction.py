@@ -26,7 +26,8 @@ def convert_to_txt(img):
     except:
         return ""   
 
-def extract_text(f, do_ocr=False, png_dir='../tmp', min_words=150, pages=5):
+def extract_text(f, do_ocr=False, tmp_dir='../tmp', min_words=150, pages=5):
+    png_dir = tmp_dir + '_' + os.path.basename(f)[:-4]
     try:
         text = textract.process(f)
         if len(splitted_words(text)) <= min_words:
@@ -34,10 +35,11 @@ def extract_text(f, do_ocr=False, png_dir='../tmp', min_words=150, pages=5):
             if not do_ocr:
                 return ''
             print f, "Estrazione testo con Vision API."
+            #print(png_dir)
             rm_dir(png_dir)
             os.mkdir(png_dir)
             # out-10.png
-            call(("convert -verbose -density 300 %s -quality 100 %s" 
+            call(("convert -density 300 %s -quality 100 %s" 
                   % (f, os.path.join(png_dir,os.path.basename(f)[:-3]+'png'))).split(' '))
             # os.listdir is not ordered by name, this fixes it
             images = sorted(os.listdir(png_dir), key=lambda item: (int(item.partition('-')[2].partition('.')[0])))
@@ -52,11 +54,14 @@ def extract_text(f, do_ocr=False, png_dir='../tmp', min_words=150, pages=5):
                         break
                 rm_dir(png_dir)        
                 if res != "":
+                    rm_dir(png_dir)
                     return res
                 else:
                     print f, "is empty"
+                    rm_dir(png_dir)
                     return ''
         else:
+            rm_dir(png_dir)
             return text
     except Exception as e:
         print e
