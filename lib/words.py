@@ -30,6 +30,9 @@ def clean_string(s):
 def splitted_words(txt):
     return re.sub('[^\w]',' ',txt).split()
 
+def splitted_words_utf8(txt):
+    return re.sub(ur'[^\w]',' ',txt, flags=re.UNICODE).split()
+
 def replace_num(word, num_repl=u'NUM', max_digits=1):
     return num_repl if word.isnumeric() and len(word)>max_digits else word
 

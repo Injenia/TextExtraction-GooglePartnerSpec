@@ -45,7 +45,7 @@ def extract_text(f, do_ocr=False, png_dir='../tmp', min_words=150, pages=5):
             if len(images) > 0:
                 res = ""
                 for i,el in enumerate(images):
-                    if i < pages:
+                    if i < pages or pages < 0:
                         txt = convert_to_txt(os.path.join(png_dir,el))
                         res += txt
                     else:
