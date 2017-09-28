@@ -24,8 +24,8 @@ def print_cm(cm, labels, hide_zeroes=False, hide_diagonal=False, hide_threshold=
             print cell,
         print
         
-def predict_test(model, X_test, y_test, labels):
-    y_pred = model.predict_classes(X_test)
+def predict_test(model, X_test, y_test, labels, verbose=0):
+    y_pred = model.predict_classes(X_test, verbose=verbose)
     report = classification_report(y_test, y_pred)
     accuracy = accuracy_score(y_test, y_pred)
     print()

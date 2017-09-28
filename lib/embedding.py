@@ -15,9 +15,9 @@ import pandas as pd
 
 # Creazione degli embedding
 
-def build_dictionary(sentences):
+def build_dictionary(sentences, start_index=0):
     d = dict()
-    index = 0
+    index = start_index
     for sentence in sentences:
         for word in sentence:
             if not word in d:

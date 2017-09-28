@@ -95,9 +95,7 @@ def sentences_doc(doc):
     clean_txt = replace_evil_dots_and_underscores(txt)
     return split_sents(clean_txt) 
 
-def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
-    sents = sentences_doc(doc)
-    #tokenizer.sentences_from_text(clean_txt)
+def tokenize_sentences(sents, min_words=2, replace_nums=True, rm_stop_words=True):
     sents_words = word_tokenizer.tokenize_sents(sents)
     splitted_sents = []
     for sentence in sents_words:
@@ -109,6 +107,10 @@ def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
         if len(sent)>=min_words:
             splitted_sents.append(sent)
     return splitted_sents
+
+def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
+    sents = sentences_doc(doc)
+    return tokenize_sentences(sents, min_words, replace_nums, rm_stop_words)
 
 def read_codec_file(filename, encoding='utf-8'):
     return codecs.open(filename, encoding=encoding).read()
