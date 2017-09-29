@@ -36,3 +36,20 @@ def predict_test(model, X_test, y_test, labels, verbose=0):
     cm = confusion_matrix(y_test, y_pred)
     print_cm(cm, labels)
     return accuracy_score(y_test, y_pred)
+
+def items_count(l):
+    d = dict()
+    for i in l:
+        if i in d.keys():
+            d[i] += 1
+        else:
+            d[i] = 1
+    return d
+
+def class_weights_max(labels):
+    counts = items_count(labels)
+    max_count = max(counts.values())
+    weights = dict()
+    for key,value in counts.items():
+        weights[key] = max_count / counts[key]
+    return weights

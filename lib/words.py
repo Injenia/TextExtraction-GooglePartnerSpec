@@ -90,9 +90,9 @@ def not_so_naive_split(txt, digit_replacement='NUM', split='.', min_words = 2):
     sentences_rep = (list(map(replace_num_old, s)) for s in sentences)
     return [rm_stop_words(s) for s in sentences_rep if len(rm_stop_words(s))>=min_words]
 
-def sentences_doc(doc):
+def sentences_doc(doc, rep=r''):
     txt = clean_string(doc)
-    clean_txt = replace_evil_dots_and_underscores(txt)
+    clean_txt = replace_evil_dots_and_underscores(txt, rep=rep)
     return split_sents(clean_txt) 
 
 def tokenize_sentences(sents, min_words=2, replace_nums=True, rm_stop_words=True):
@@ -111,6 +111,20 @@ def tokenize_sentences(sents, min_words=2, replace_nums=True, rm_stop_words=True
 def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True):
     sents = sentences_doc(doc)
     return tokenize_sentences(sents, min_words, replace_nums, rm_stop_words)
+
+def filter_indexes(pred, l):
+    fl = ((i,e) for i,e in enumerate(l) if pred(e))
+    return tuple(list(e) for e in zip(*fl))
+
+def index_ignore_whitespaces(s, sub):
+    ws = [' ', '\t', '\n', '\r', '\f', '\v']
+    pred = lambda x: x not in ws
+    idxs, fs = filter_indexes(pred, s)
+    try:
+        i = ''.join(fs).index(re.sub(r'\s+', '', sub))
+    except:
+        return -1
+    return idxs[i]
 
 def read_codec_file(filename, encoding='utf-8'):
     return codecs.open(filename, encoding=encoding).read()
