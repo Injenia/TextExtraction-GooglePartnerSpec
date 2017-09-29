@@ -67,12 +67,12 @@ def replace_num(word, r = 'NUM'):
         return word
 '''
 
-def replace_evil_dots_and_underscores(txt):
-    no_abbr = re.sub(u'([bcdfghjklmnpqrstvwxyz])\.', r'\1', txt)
-    no_nums = re.sub(u'(\d)\.', r'\1', no_abbr)
-    no_nums = re.sub(u'\.(\d)', r'\1', no_nums)
-    no_maiusc = re.sub(u'([A-Z])\.', r'\1', no_nums)
-    no_underscores = re.sub(u'_', '', no_maiusc)
+def replace_evil_dots_and_underscores(txt, rep=r''):
+    no_abbr = re.sub(u'([bcdfghjklmnpqrstvwxyz])\.', r'\1'+rep, txt)
+    no_nums = re.sub(u'(\d)\.', r'\1'+rep, no_abbr)
+    no_nums = re.sub(u'\.(\d)', r'\1'+rep, no_nums)
+    no_maiusc = re.sub(u'([A-Z])\.', r'\1'+rep, no_nums)
+    no_underscores = re.sub(u'_', ''+rep, no_maiusc)
     return no_underscores
 
 def rm_stop_words(words):
