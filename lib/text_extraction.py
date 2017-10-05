@@ -5,7 +5,7 @@ from google.cloud import vision
 from google.cloud.vision import types
 
 from subprocess import call
-from utils import rm_dir
+from utils import rm_dir, batch_list
 
 import textract
 import os
@@ -40,9 +40,6 @@ def images_to_txt_batch(filenames):
     except Exception as e:
         print(e)
         return ''
-
-def batch_list(l, n):
-    return [l[i:i+n] for i in range(0,len(l),n)]
     
 def images_to_txt(filenames):
     return '\n'.join(images_to_txt_batch(batch) for batch in batch_list(filenames, 16))

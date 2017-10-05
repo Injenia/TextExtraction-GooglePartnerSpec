@@ -12,6 +12,10 @@ import pickle
 import csv
 import zipfile
 
+# lists
+def batch_list(l, n):
+    return [l[i:i+n] for i in range(0,len(l),n)]
+
 # Files
 def ensure_dir_exists(directory):
     if not os.path.isdir(directory):
