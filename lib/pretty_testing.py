@@ -36,7 +36,7 @@ def predict_test(model, X_test, y_test, labels, verbose=0):
     print('Test confusion Matrix')
     cm = confusion_matrix(y_test, y_pred)
     print_cm(cm, labels)
-    return accuracy_score(y_test, y_pred)
+    return y_pred
 
 def items_count(l):
     d = dict()

@@ -48,6 +48,8 @@ def move_flattened_files(src_dir, out_dir, filt):
             else:
                 move_flattened_files(str(f.absolute()), out_dir, filt)
 
+def list_dir_full(d):
+    return [os.path.join(d, f) for f in os.listdir(d)]
 
 #JSON
 def load_json(path, verbose=False):
