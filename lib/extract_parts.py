@@ -2,6 +2,7 @@ from __future__ import print_function
 from __future__ import division
 from keras.models import model_from_json
 from keras.preprocessing import sequence
+import predict_pdf as pp
 import words as wd
 import embedding as em
 import text_extraction as te
@@ -9,8 +10,23 @@ import pandas as pd
 import json
 import re
 
-nomi_cognomi_list = [w for n in open('../../extraction/nomi/notari.txt') for w in n.strip().lower().split(' ')]
-nomi_cognomi_notai = set(join_cognomi_articles(nomi_cognomi_list))
+def join_cognomi_articles(words):
+    articles = set([u'de', u'di', u'du', u'del', u'dell', u'la', u'dei', u'le', 
+                    u'della', u'dall', u'dalla', u'dello', 'degli', 'lo', 'art',
+                   u'dal', u'dalle'])
+    found = False
+    joined_words = []
+    for word in words:
+        if not found and word.lower() in articles:
+            found = True
+            cur_word = word
+        elif found:
+            cur_word += ' '+word
+            joined_words.append(cur_word)
+            found = False
+        else:
+            joined_words.append(word)
+    return joined_words
 
 def is_scadenza(s):
     return re.match(r'.*primo\s+?esercizio.*', s) != None
@@ -67,12 +83,14 @@ class PartsExtraction(object):
         predictions = self.extract_parts(sentences) if predictions == None else predictions
         df = pd.DataFrame({'sentence':sentences,'prediction':predictions})
         pivoted = df.pivot(columns='prediction', values='sentence')
-        return {k:list(filter(None, pivoted[k])) for k in labels}
+        found_labels = set(predictions)
+        return {k:list(filter(None, pivoted[k])) for k in found_labels}
     
     def extract_parts_dict_indexes(self, predictions):
         df = pd.DataFrame({'sentence':list(range(len(predictions))),'prediction':predictions})
         pivoted = df.pivot(columns='prediction', values='sentence')
-        return {k:[int(i) for i in filter(lambda x: x==x, pivoted[k])] for k in labels} #nan != nan 
+        found_labels = set(predictions)
+        return {k:[int(i) for i in filter(lambda x: x==x, pivoted[k])] for k in found_labels} #nan != nan 
     
 def is_valid_nl(txt, threshold=0.075):
     return txt.count('\n')/len(txt)<=threshold
@@ -84,25 +102,10 @@ def sentences_probas_dict(sentences, probas):
     return [{'frase':s,'prob':labels_probas_dict(labels[:-1], p)} for s,p in zip(sentences, probas)]
 
 def sentences_probas(sentences, probas):
-    return [{'frase':s,'prob':list(p)} for s,p in zip(sentences, probas)]
+    return [{'frase':s,'prob':p.tolist()} for s,p in zip(sentences, probas)]
 
-def join_cognomi_articles(words):
-    articles = set([u'de', u'di', u'du', u'del', u'dell', u'la', u'dei', u'le', 
-                    u'della', u'dall', u'dalla', u'dello', 'degli', 'lo', 'art',
-                   u'dal', u'dalle'])
-    found = False
-    joined_words = []
-    for word in words:
-        if not found and word.lower() in articles:
-            found = True
-            cur_word = word
-        elif found:
-            cur_word += ' '+word
-            joined_words.append(cur_word)
-            found = False
-        else:
-            joined_words.append(word)
-    return joined_words
+def dict_indexes_to_sentences(sentences, dict_indexes):
+    return {k:[sentences[i] for i in dict_indexes[k]] for k in dict_indexes.keys()}
 
 def join_apostrophe(words):
     joined = ' '.join(words)
@@ -123,13 +126,61 @@ def find_me(words):
             return i
     return im
 
-def extract_notaio_name(doc, notaio_names, neigh=5):
-    words = [w for sent in doc for w in wd.splitted_words_utf8(sent)]
-    j_words = join_cognomi_articles(join_apostrophe(words))
-    im = find_me(j_words)
-    if im >= 0:
-        m_words = j_words[im+1:im+neigh]
-    else:
-        m_words = j_words
-    return [word for word in m_words if word.lower() in notaio_names and word[0].isupper()]
+class NotaioNameExtractor(object):
+    def __init__(self, notaio_names):
+        self.notaio_names = notaio_names
+        
+    @staticmethod
+    def load_from_file(filename='../extraction/nomi/notari.txt'):
+        nomi_cognomi_list = [w for n in open('../extraction/nomi/notari.txt') for w in n.strip().lower().split(' ')]
+        nomi_cognomi_notai = set(join_cognomi_articles(nomi_cognomi_list))
+        return NotaioNameExtractor(nomi_cognomi_notai)
+
+    def extract_notaio_name(self, doc, neigh=5):
+        words = [w for sent in doc for w in wd.splitted_words_utf8(sent)]
+        j_words = join_cognomi_articles(join_apostrophe(words))
+        im = find_me(j_words)
+        if im >= 0:
+            m_words = j_words[im+1:im+neigh]
+        else:
+            m_words = j_words
+        return [word for word in m_words if word.lower() in self.notaio_names and word[0].isupper()]
+
+def build_json_response(prediction, sensato=False, sentences=None, probas=None,  nome_notaio='', parts=[]):
+    classes_names = ['non costitutivo', 'costitutivo']
+    res = {}
+    res['classe'] = classes_names[int(round(prediction))]
+    res['confidenza'] = prediction
+    if res['classe'] == 'costitutivo':
+        res['sensato'] = sensato
+        if sensato == True:
+            res['frasi'] = sentences_probas(sentences, probas)
+            res['nome notaio'] = nome_notaio
+            res['parti'] = parts
+    return json.dumps(res)
+
+class PredictorExtractor(object):
+    def __init__(self, predictor_models, parts_extractor, name_extractor):
+        self.predictor_models = predictor_models
+        self.parts_extractor = parts_extractor
+        self.name_extractor = name_extractor
+
+    def predict_extract_pdf_json(self, filename):
+        txt = te.extract_text(filename, do_ocr=False, pages=-1)
+        
+        prediction = float(pp.predict_document_str(txt, **self.predictor_models))
+        sensato = is_valid_nl(txt)
+        
+        if prediction <0.5 or not sensato:
+            return build_json_response(prediction)
+        
+        sentences = wd.sentences_doc(txt, rep=' ', newline=True)
+
+        pe = self.parts_extractor
+        probas = pe.extract_parts_prob(sentences)
+        predictions = pe.extract_parts(sentences, post_process=True, probas=probas)
+        dict_indexes = pe.extract_parts_dict_indexes(predictions)
+
+        name = ' '.join(self.name_extractor.extract_notaio_name(sentences))
+        return build_json_response(prediction, sensato, sentences, probas, name, dict_indexes)
     
