@@ -8,6 +8,7 @@ import embedding as em
 import text_extraction as te
 import pandas as pd
 import json
+from utils import uniq_list
 import re
 
 def join_cognomi_articles(words):
@@ -136,7 +137,7 @@ class NotaioNameExtractor(object):
         nomi_cognomi_notai = set(join_cognomi_articles(nomi_cognomi_list))
         return NotaioNameExtractor(nomi_cognomi_notai)
 
-    def extract_notaio_name(self, doc, neigh=5):
+    def extract_notaio_name(self, doc, neigh=5, max_names=3):
         words = [w for sent in doc for w in wd.splitted_words_utf8(sent)]
         j_words = join_cognomi_articles(join_apostrophe(words))
         im = find_me(j_words)
@@ -144,7 +145,8 @@ class NotaioNameExtractor(object):
             m_words = j_words[im+1:im+neigh]
         else:
             m_words = j_words
-        return [word for word in m_words if word.lower() in self.notaio_names and word[0].isupper()]
+        found_names = [word for word in m_words if word.lower() in self.notaio_names and word[0].isupper()]
+        return uniq_list(found_names)[:max_names]
 
 def build_json_response(prediction, sensato=False, sentences=None, probas=None,  nome_notaio='', parts=[]):
     classes_names = ['non costitutivo', 'costitutivo']

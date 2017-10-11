@@ -16,6 +16,11 @@ import zipfile
 def batch_list(l, n):
     return [l[i:i+n] for i in range(0,len(l),n)]
 
+def uniq_list(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
+
 # Files
 def ensure_dir_exists(directory):
     if not os.path.isdir(directory):

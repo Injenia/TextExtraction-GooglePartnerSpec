@@ -23,17 +23,21 @@ app = Flask(__name__)
 CORS(app)
 pred_extract = load_predictor_extractor()
 upload_dir = '../test_upload'
+allowed_extensions = set(['pdf'])
 
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/document', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/document', methods=['GET', 'POST'])
 def predict_and_extract():
-    if request.method == 'POST' or request.method == 'OPTIONS':
+    if request.method == 'POST':
         if request.is_json:
             json_req = request.get_json()
             filename = os.path.join(upload_dir, json_req['filename'])
+            if filename.split('.')[-1].lower() not in allowed_extensions:
+                return jsonify('Please upload a pdf'), 415
+            
             content = base64.b64decode(json_req['content'])
 
             with open(filename, 'wb') as o:
