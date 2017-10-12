@@ -148,17 +148,17 @@ class NotaioNameExtractor(object):
         found_names = [word for word in m_words if word.lower() in self.notaio_names and word[0].isupper()]
         return uniq_list(found_names)[:max_names]
 
-def build_json_response(prediction, sensato=False, sentences=None, probas=None,  nome_notaio='', parts=[]):
+def build_json_response(prediction, sensato=False, sentences=[], probas=[],  nome_notaio='', parts=[]):
     classes_names = ['non costitutivo', 'costitutivo']
     res = {}
     res['classe'] = classes_names[int(round(prediction))]
     res['confidenza'] = prediction
-    if res['classe'] == 'costitutivo':
-        res['sensato'] = sensato
-        if sensato == True:
-            res['frasi'] = sentences_probas(sentences, probas)
-            res['nome notaio'] = nome_notaio
-            res['parti'] = parts
+    #if res['classe'] == 'costitutivo':
+    res['sensato'] = sensato
+    #if sensato == True:
+    res['frasi'] = sentences_probas(sentences, probas)
+    res['nome notaio'] = nome_notaio
+    res['parti'] = parts
     return json.dumps(res)
 
 class PredictorExtractor(object):

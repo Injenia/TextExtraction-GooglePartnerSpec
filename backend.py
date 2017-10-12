@@ -29,9 +29,9 @@ allowed_extensions = set(['pdf'])
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/document', methods=['GET', 'POST'])
+@app.route('/document', methods=['GET', 'POST', 'OPTIONS'])
 def predict_and_extract():
-    if request.method == 'POST':
+    if request.method == 'POST' or  request.method == 'OPTIONS':
         if request.is_json:
             json_req = request.get_json()
             filename = os.path.join(upload_dir, json_req['filename'])
