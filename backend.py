@@ -4,6 +4,7 @@ import os
 from lib import predict_pdf as pp
 from lib import extract_parts as ep
 from lib import text_extraction as te
+import json
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -24,12 +25,21 @@ CORS(app)
 pred_extract = load_predictor_extractor()
 upload_dir = '../test_upload'
 allowed_extensions = set(['pdf'])
-
+with open("samples/5115047380001.json") as f:
+    sample = json.load(f)
+#print(sample)
+    
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/document', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/sample', methods=['GET', 'POST', 'OPTIONS'])
+def sample_response():
+    if request.method == 'POST' or  request.method == 'OPTIONS':
+        #print(sample)
+        return jsonify(sample)
+
+@app.route('/document', methods=['POST', 'OPTIONS'])
 def predict_and_extract():
     if request.method == 'POST' or  request.method == 'OPTIONS':
         if request.is_json:
@@ -46,7 +56,8 @@ def predict_and_extract():
             try:
                 res = pred_extract.predict_extract_pdf_json(filename)
             except Exception as e:
-                return jsonify({'exception':str(e), "extracted_text":te.extract_text(filename, do_ocr=False, pages=-1)})
+                #return jsonify({'exception':str(e), "extracted_text":te.extract_text(filename, do_ocr=False, pages=-1)})
+                return jsonify(ep.build_json_response())
             finally:
                 os.remove(filename)
             

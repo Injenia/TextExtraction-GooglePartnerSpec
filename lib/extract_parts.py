@@ -11,6 +11,8 @@ import json
 from utils import uniq_list
 import re
 
+default_parts = {k:[] for k in ['poteri', 'assemblea', 'clausola', 'non_riconducibile', 'scadenza']}
+
 def join_cognomi_articles(words):
     articles = set([u'de', u'di', u'du', u'del', u'dell', u'la', u'dei', u'le', 
                     u'della', u'dall', u'dalla', u'dello', 'degli', 'lo', 'art',
@@ -87,11 +89,13 @@ class PartsExtraction(object):
         found_labels = set(predictions)
         return {k:list(filter(None, pivoted[k])) for k in found_labels}
     
-    def extract_parts_dict_indexes(self, predictions):
+    def extract_parts_dict_indexes(self, predictions, default_parts=default_parts):
         df = pd.DataFrame({'sentence':list(range(len(predictions))),'prediction':predictions})
         pivoted = df.pivot(columns='prediction', values='sentence')
         found_labels = set(predictions)
-        return {k:[int(i) for i in filter(lambda x: x==x, pivoted[k])] for k in found_labels} #nan != nan 
+        res = default_parts.copy()
+        res.update({k:[int(i) for i in filter(lambda x: x==x, pivoted[k])] for k in found_labels}) #nan != nan 
+        return res
     
 def is_valid_nl(txt, threshold=0.075):
     return txt.count('\n')/len(txt)<=threshold
@@ -148,7 +152,10 @@ class NotaioNameExtractor(object):
         found_names = [word for word in m_words if word.lower() in self.notaio_names and word[0].isupper()]
         return uniq_list(found_names)[:max_names]
 
-def build_json_response(prediction, sensato=False, sentences=[], probas=[],  nome_notaio='', parts=[]):
+#def default_parts(labels=['poteri', 'assemblea', 'clausola', 'non_riconducibile', 'scadenza']):
+#    return {k:[] for k in labels}
+    
+def build_json_response(prediction=0, sensato=False, sentences=[], probas=[],  nome_notaio='', parts=default_parts, exception=True):
     classes_names = ['non costitutivo', 'costitutivo']
     res = {}
     res['classe'] = classes_names[int(round(prediction))]
@@ -157,9 +164,10 @@ def build_json_response(prediction, sensato=False, sentences=[], probas=[],  nom
     res['sensato'] = sensato
     #if sensato == True:
     res['frasi'] = sentences_probas(sentences, probas)
-    res['nome notaio'] = nome_notaio
+    res['nome_notaio'] = nome_notaio
     res['parti'] = parts
-    return json.dumps(res)
+    res['exception'] = exception
+    return res
 
 class PredictorExtractor(object):
     def __init__(self, predictor_models, parts_extractor, name_extractor):
@@ -174,7 +182,7 @@ class PredictorExtractor(object):
         sensato = is_valid_nl(txt)
         
         if prediction <0.5 or not sensato:
-            return build_json_response(prediction)
+            return build_json_response(prediction, exception=False)
         
         sentences = wd.sentences_doc(txt, rep=' ', newline=True)
 
@@ -184,5 +192,5 @@ class PredictorExtractor(object):
         dict_indexes = pe.extract_parts_dict_indexes(predictions)
 
         name = ' '.join(self.name_extractor.extract_notaio_name(sentences))
-        return build_json_response(prediction, sensato, sentences, probas, name, dict_indexes)
+        return build_json_response(prediction, sensato, sentences, probas, name, dict_indexes, False)
     
