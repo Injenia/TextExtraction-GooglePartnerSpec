@@ -159,7 +159,7 @@ def build_json_response(prediction=0, sensato=False, sentences=[], probas=[],  n
     classes_names = ['non costitutivo', 'costitutivo']
     res = {}
     res['classe'] = classes_names[int(round(prediction))]
-    res['confidenza'] = prediction
+    res['confidenza'] = prediction if prediction>0.5 else 1-prediction
     #if res['classe'] == 'costitutivo':
     res['sensato'] = sensato
     #if sensato == True:

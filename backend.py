@@ -9,7 +9,6 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from flask_cors import CORS
-from tempfile import NamedTemporaryFile
 import base64
 
 def load_predictor_extractor():
@@ -56,7 +55,6 @@ def predict_and_extract():
             try:
                 res = pred_extract.predict_extract_pdf_json(filename)
             except Exception as e:
-                #return jsonify({'exception':str(e), "extracted_text":te.extract_text(filename, do_ocr=False, pages=-1)})
                 return jsonify(ep.build_json_response())
             finally:
                 os.remove(filename)
