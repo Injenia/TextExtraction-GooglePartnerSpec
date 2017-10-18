@@ -58,6 +58,7 @@ gensim_model*
 
 # models
 *.json
+models/
 
 # logs
 *.log
