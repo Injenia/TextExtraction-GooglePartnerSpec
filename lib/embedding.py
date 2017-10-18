@@ -150,7 +150,7 @@ if __name__ == '__main__':
     
     if os.path.exists(permitted_words_filename):
         with open(permitted_words_filename) as o:
-            permitted_words = json.load(permitted_words_filename)
+            permitted_words = json.load(o)
     else:
         fnw = first_n_words(splitted_sentences, 5000)
         permitted_words = [e[0] for e in fnw]
