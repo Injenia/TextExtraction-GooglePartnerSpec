@@ -127,7 +127,8 @@ def build_dataset(model, df, permitted_words):
 if __name__ == '__main__':
     csv_filename = '/notebooks/dev/infocamere/atti2.csv'
     model_filename = '../models/gensim_5000_model_with_verb.d2v'
-    permitted_words_filename = '../first_5000_words_with_verb.json'
+    permitted_words_filename = '../first_5000_words_with_verb_cost.json'
+    dataset_filename = "/notebooks/dev/infocamere/git/embedded_docs_with_verb.p"
     
     # Creazione del dataset come sottoinsieme bilanciato dei documenti
     df = pd.read_csv(csv_filename, encoding='utf-8')
@@ -153,7 +154,7 @@ if __name__ == '__main__':
     else:
         fnw = first_n_words(splitted_sentences, 5000)
         permitted_words = [e[0] for e in fnw]
-        with open("../first_5000_words_with_verb.json", 'w') as o:
+        with open(permitted_words_filename, 'w') as o:
             json.dump(permitted_words, o)
     
     filtered_sentences = reduce_dictionary(splitted_sentences, set(permitted_words))
@@ -171,6 +172,6 @@ if __name__ == '__main__':
     label_map = {'costitutivo':1, 'non_costitutivo':0}
     labels_n = [label_map[l] for l in labels]
 
-    with open("/notebooks/dev/infocamere/git/embedded_docs_with_verb.p", "w") as fout:
+    with open(dataset_filename, "w") as fout:
         pickle.dump([docs, labels_n], fout)
 
