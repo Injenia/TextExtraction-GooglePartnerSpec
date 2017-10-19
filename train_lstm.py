@@ -15,20 +15,25 @@ import pickle
 # fix random seed for reproducibility
 np.random.seed(8)
 
+dataset_file = 'embedded_docs_with_verb.p'
+model_weights_file = 'models/keras_new_weights_with_verb.h5'
+
 
 # load prepared data
-with open('embedded_docs.p') as f:
+with open(dataset_file) as f:
     data, labels = pickle.load(f)
 
 print 'Data loaded'
     
 # padding for the rnn
 padded_data = sequence.pad_sequences(data, maxlen=200,padding="pre", truncating="post", value=0.0, dtype='float32')
+del data
 
 print 'Data padded'
 
 # load the dataset but only keep the top n words, zero the rest
 X_train, X_test, y_train, y_test = train_test_split(padded_data, labels, train_size=0.9, stratify=labels)
+del padded_data
 
 print 'Data splitted'
 
@@ -46,7 +51,7 @@ scores = model.evaluate(X_test, y_test, verbose=0)
 print("Accuracy: %.2f%%" % (scores[1]*100))
 
 # serialize weights to HDF5
-model.save_weights("models/keras_new_weights.h5")
+model.save_weights(model_weights_file)
 
 # test
 predict_test(model, X_test, y_test, ['non_cost', 'cost'])
