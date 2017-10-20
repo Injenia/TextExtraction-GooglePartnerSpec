@@ -11,8 +11,19 @@ from flask import jsonify
 from flask_cors import CORS
 import base64
 
+prediction_models = {'gensim_file':'models/gensim_model_5000.d2v', 
+                     'keras_model_file':'models/keras_model.json',
+                     'keras_weights_file':'models/keras_weights_5000.h5',    
+                     'permitted_words_file':'first_5000_words.json'}
+
+prediction_models_verb = {'gensim_file':'models/gensim_5000_model_with_verb.d2v', 
+                         'keras_model_file':'models/keras_model.json',
+                         'keras_weights_file':'models/keras_new_weights_with_verb_es.h5',    
+                         'permitted_words_file':'first_5000_words_with_verb.json'}
+
+
 def load_predictor_extractor():
-    models = pp.load_models()
+    models = pp.load_models(**prediction_models)           
     name_extractor = ep.NotaioNameExtractor.load_from_file()
     pe = ep.PartsExtraction.load_from_files('models/extraction_model_30_all.json',
                                      'models/extraction_weights_30_all.h5',
