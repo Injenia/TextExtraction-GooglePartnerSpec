@@ -19,7 +19,7 @@ prediction_models = {'gensim_file':'models/gensim_model_5000.d2v',
 prediction_models_verb = {'gensim_file':'models/gensim_5000_model_with_verb.d2v', 
                          'keras_model_file':'models/keras_model.json',
                          'keras_weights_file':'models/keras_new_weights_with_verb_es.h5',    
-                         'permitted_words_file':'first_5000_words_with_verb.json'}
+                         'permitted_words_file':'first_5000_words_with_verb_cost.json'}
 
 
 def load_predictor_extractor():
