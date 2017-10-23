@@ -33,7 +33,7 @@ def load_predictor_extractor():
 app = Flask(__name__)
 CORS(app)
 pred_extract = load_predictor_extractor()
-upload_dir = '../test_upload'
+upload_dir = '../temp_upload_flask'
 allowed_extensions = set(['pdf'])
 with open("samples/5115047380001.json") as f:
     sample = json.load(f)
