@@ -62,3 +62,10 @@ models/
 
 # logs
 *.log
+
+# DEMO dirs
+demo/**/work/**
+!README.md
+demo/**/logs/**
+!README.md
+
