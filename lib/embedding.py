@@ -128,7 +128,7 @@ if __name__ == '__main__':
     csv_filename = '/notebooks/dev/infocamere/atti2.csv'
     model_filename = '../models/gensim_5000_model_with_verb.d2v'
     permitted_words_filename = '../first_5000_words_with_verb_cost.json'
-    dataset_filename = "/notebooks/dev/infocamere/git/embedded_docs_with_verb.p"
+    dataset_filename = "../embedded_docs_with_verb.p"
     
     # Creazione del dataset come sottoinsieme bilanciato dei documenti
     df = pd.read_csv(csv_filename, encoding='utf-8')
@@ -164,9 +164,10 @@ if __name__ == '__main__':
     del grouped
     del dfs
     del grouped_nc
-    del splitted_sentences
+
     model = build_embedding(list(iter_sentences(filtered_sentences)), model_filename)
     #model = build_embedding(None)
+    del splitted_sentences
     
     docs, labels = build_dataset(model, df_balanced, permitted_words)
     label_map = {'costitutivo':1, 'non_costitutivo':0}

@@ -16,9 +16,13 @@ def predict_documents_str(filenames, txts, gensim_model, keras_model, permitted_
     if len(filtered_filenames) == 0:
         return [], []
     
-    splitted_txts = (tokenize_doc(txt) for txt in not_empty_txts) 
-    filtered_txts = (list(reduce_dictionary(document, permitted_words)) for document in splitted_txts)
-    embedded_txts = [embed_document(gensim_model, doc, permitted_words) for doc in filtered_txts]
+    #print(not_empty_txts[0])
+    splitted_txts = (tokenize_doc(txt) for txt in not_empty_txts)
+    #print(splitted_txts[0])
+    #filtered_txts = (list(reduce_dictionary(document, permitted_words)) for document in splitted_txts)
+    #print("FILTER!!!!!")
+    #print(filtered_txts[0])
+    embedded_txts = [embed_document(gensim_model, doc, permitted_words) for doc in splitted_txts] #filtered_txts]
     padded_data = sequence.pad_sequences(embedded_txts, maxlen=200, padding="pre", truncating="post", value=0.0, dtype='float32')
     probs = keras_model.predict_proba(padded_data, verbose=0)
     return [prob[0] for prob in probs], filtered_filenames
