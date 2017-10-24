@@ -128,7 +128,7 @@ if __name__ == '__main__':
     csv_filename = '/notebooks/dev/infocamere/atti2.csv'
     model_filename = '../models/gensim_5000_model_with_verb.d2v'
     permitted_words_filename = '../first_5000_words_with_verb_cost.json'
-    dataset_filename = "../embedded_docs_with_verb.p"
+    dataset_filename = "../embedded_docs_with_verb_retry.p"
     
     # Creazione del dataset come sottoinsieme bilanciato dei documenti
     df = pd.read_csv(csv_filename, encoding='utf-8')
