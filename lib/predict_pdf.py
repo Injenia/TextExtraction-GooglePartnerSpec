@@ -52,8 +52,8 @@ def load_models(gensim_file='models/gensim_model_5000.d2v',
 
 def predict_document_str(txt, gensim_model, keras_model, permitted_words):
     split_txt = tokenize_doc(txt)
-    filtered_txt = list(reduce_dictionary(split_txt, permitted_words))
-    embedded_txt = embed_document(gensim_model, filtered_txt, permitted_words)
+    #filtered_txt = list(reduce_dictionary(split_txt, permitted_words))
+    embedded_txt = embed_document(gensim_model, split_txt, permitted_words)
     padded_data = sequence.pad_sequences([embedded_txt], maxlen=200, padding="pre", truncating="post", value=0.0, dtype='float32')
     return keras_model.predict(padded_data, verbose=0)[0,0]
 

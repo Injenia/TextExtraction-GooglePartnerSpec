@@ -18,28 +18,50 @@ allowed_lower_chars_punct = set(u'abcdefghijklmnopqrstuvwxyz1234567890àèéùò
 #stop_words = open('/notebooks/dev/infocamere/git/stop_words.txt').read().split()
 
 def to_utf8(txt):
+    """
+    Decodes UTF-8 strings to unicode objects
+    """
     return txt.decode('utf-8') if type(txt) == str else txt
 
 def compress_blanks(s):
+    """
+    Replaces all blank chars with single spaces
+    """
     return re.sub( ur'\s+', u' ', s).strip()
 
 def clean_string(s):
+    """
+    Converts to UTF-8, eliminates not meaningful chars (wrt the italian language), and compresses blanks
+    """
     us = to_utf8(s)
     return compress_blanks(u''.join(c if c.lower() in allowed_lower_chars_punct else ' ' for c in us))
 
 def clean_string_not_compressed(s):
+    """
+    Converts to UTF-8, eliminates not meaningful chars (wrt the italian language)
+    """
     us = to_utf8(s)
     return u''.join(c if c.lower() in allowed_lower_chars_punct else ' ' for c in us)
 
 def splitted_words(txt):
+    """
+    Basic, not UTF-8 way to split words (sequences of english letters and numbers)
+    """
     return re.sub('[^\w]',' ',txt).split()
 
 def splitted_words_utf8(txt):
+    """
+    Split words, keeping also accents, etc
+    """
     return re.sub(ur'[^\w]',' ',txt, flags=re.UNICODE).split()
 
 def replace_num(word, num_repl=u'NUM', max_digits=1):
+    """
+    Replaces a numeric word with NUM. By default single digit numbers are kept
+    """
     return num_repl if word.isnumeric() and len(word)>max_digits else word
 
+"""-----------------------OLD STUFF----------------------"""
 def replace_num_old(word, num_repl=u'NUM'):
     return num_repl if num_repl in word else word
 
@@ -48,8 +70,12 @@ def replace_digit(c, r='NUM'):
 
 def replace_digits(txt, r = 'NUM'):
     return ''.join(replace_digit(d, r) for d in txt)
+"""-----------------------------------------------------"""
 
 def replace_alnum(word, alnum_repl=u'ALPHANUM', max_digits=1):
+    """
+    Replaces strings containing digits with ALPHANUM
+    """
     return alnum_repl if re.search('\d', word) != None and len(word)>max_digits else word
 
 def contains_punctuation(word):
@@ -61,17 +87,16 @@ def contains_not_allowed_chars(word):
     return len(swl-allowed_lower_chars)>0
 
 def split_sents(doc):
+    """
+    Basic way to split sentences with punctuation
+    """
     return [s for s in re.split(u'[.;!?]', doc) if len(s)>0]
 
-'''
-def replace_num(word, r = 'NUM'):
-    if r in word:
-        return r
-    else:
-        return word
-'''
-
 def replace_evil_dots_and_underscores(txt, rep=r''):
+    """
+    Eliminates dots in abbreviations and numbers, in order to split sentences on dots (that really divide sentences).
+    It also removes underscores.
+    """
     no_abbr = re.sub(u'([bcdfghjklmnpqrstvwxyz])\.', r'\1'+rep, txt)
     no_nums = re.sub(u'(\d)\.', r'\1'+rep, no_abbr)
     no_nums = re.sub(u'\.(\d)', r'\1'+rep, no_nums)
@@ -80,6 +105,11 @@ def replace_evil_dots_and_underscores(txt, rep=r''):
     return no_underscores
 
 def replace_evil_dots_and_underscores_newline(txt, rep=r''):
+    """
+    Eliminates dots in abbreviations and numbers, in order to split sentences on dots (that really divide sentences).
+    It handles the case in which those dots separated sentences (when they are followed by a newline)
+    It also removes underscores.
+    """
     no_abbr = re.sub(r'([bcdfghjklmnpqrstvwxyz])\.(?!\n)', r'\1'+rep, txt)
     no_nums = re.sub(r'(\d)\.(?!\n)', r'\1'+rep, no_abbr)
     no_nums = re.sub(r'\.(\d)', r'\1'+rep, no_nums)
@@ -142,6 +172,27 @@ def index_ignore_whitespaces(s, sub):
     except:
         return -1
     return idxs[i]
+
+def word_tokenize_replace(text):
+    """
+    Tokenizes separating words and punctuation.
+    It does the following substitutions:
+        - italian stopwords with STOPWORD
+        - dots with DOT
+        - other punctuation with PUNCT
+        - numbers with NUM
+        - words with numbers (ex codes) with ALPHANUM
+    """
+    t = WordPunctTokenizer()
+    cleaned_string = clean_string_not_compressed(text)
+    clean_text = replace_evil_dots_and_underscores_newline(cleaned_string, rep=' ').lower()
+    tokens = t.tokenize(clean_text)
+    sw_tokens = (w if w not in stop_words else u"STOPWORD" for w in tokens)
+    no_dots_tokens = (w if w != u'.' else u'DOT' for w in sw_tokens)
+    no_punct_tokens = (w if w[0] not in punctuation else u'PUNCT' for w in no_dots_tokens)
+    replaced_codes = [replace_alnum(replace_num(t)) for t in no_punct_tokens]
+    return replaced_codes
+
 
 def read_codec_file(filename, encoding='utf-8'):
     return codecs.open(filename, encoding=encoding).read()
