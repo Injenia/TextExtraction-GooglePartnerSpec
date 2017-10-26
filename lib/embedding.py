@@ -96,6 +96,23 @@ def embed_document(model, doc, permitted_words):
 def embed_document_p(doc, model, permitted_words):
     return [sentence_vector(model, sentence, permitted_words) for sentence in doc]
 
+class DictionaryMapper(object):
+    def __init__(self, reduced_dictionary):
+        self.reduced_dictionary = reduced_dictionary
+        
+    def fit_texts(self, texts, maxwords):
+        fnw = first_n_words(texts, maxwords)
+        permitted_words = set(e[0] for e in fnw)
+        reduced_texts = list(reduce_dictionary(texts, permitted_words, min_words=1))
+        self.reduced_dictionary = build_dictionary(reduced_texts, start_index=1)
+    
+    def map_to_ints(self, texts):
+        reduced_texts = list(reduce_dictionary(texts, set(self.reduced_dictionary.keys()), min_words=1))
+        #int_texts = [[self.reduced_dictionary[w] for w in text] for text in reduced_texts]
+        #return int_texts
+        for text in reduced_texts:
+            yield [self.reduced_dictionary[w] for w in text]
+
 # Costruzione del dataset
 
 def build_dataset(model, df, permitted_words):
