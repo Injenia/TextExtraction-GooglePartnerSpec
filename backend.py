@@ -11,23 +11,23 @@ from flask import jsonify
 from flask_cors import CORS
 import base64
 
-prediction_models = {'gensim_file':'models/gensim_model_5000.d2v', 
-                     'keras_model_file':'models/keras_model.json',
-                     'keras_weights_file':'models/keras_weights_5000.h5',    
-                     'permitted_words_file':'first_5000_words.json'}
+prediction_models = {'gensim_file':'../models/gensim_model_5000.d2v', 
+                     'keras_model_file':'../models/keras_model.json',
+                     'keras_weights_file':'../models/keras_weights_5000.h5',    
+                     'permitted_words_file':'../dictionaries/first_5000_words.json'}
 
-prediction_models_verb = {'gensim_file':'models/gensim_5000_model_with_verb.d2v', 
-                         'keras_model_file':'models/keras_model.json',
-                         'keras_weights_file':'models/keras_new_weights_with_verb_es.h5',    
-                         'permitted_words_file':'first_5000_words_with_verb_cost.json'}
+prediction_models_verb = {'gensim_file':'../models/gensim_5000_model_with_verb.d2v', 
+                         'keras_model_file':'../models/keras_model.json',
+                         'keras_weights_file':'../models/keras_new_weights_with_verb_es.h5',    
+                         'permitted_words_file':'../dictionaries/first_5000_words_with_verb_cost.json'}
 
 
 def load_predictor_extractor():
     models = pp.load_models(**prediction_models)           
     name_extractor = ep.NotaioNameExtractor.load_from_file()
-    pe = ep.PartsExtraction.load_from_files('models/extraction_model_30_all.json',
-                                     'models/extraction_weights_30_all.h5',
-                                     'first_5000_words_extraction.json')
+    pe = ep.PartsExtraction.load_from_files('../models/extraction_model_30_all.json',
+                                     '../models/extraction_weights_30_all.h5',
+                                     '../dictionaries/first_5000_words_extraction.json')
     return ep.PredictorExtractor(models, pe, name_extractor)
 
 app = Flask(__name__)
@@ -35,7 +35,7 @@ CORS(app)
 pred_extract = load_predictor_extractor()
 upload_dir = '../temp_upload_flask'
 allowed_extensions = set(['pdf'])
-with open("samples/5115047380001.json") as f:
+with open("../samples/5115047380001.json") as f:
     sample = json.load(f)
 #print(sample)
     

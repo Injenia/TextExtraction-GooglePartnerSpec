@@ -21,9 +21,9 @@ import pickle
 # fix random seed for reproducibility
 np.random.seed(8)
 
-dataset_file = 'word_embedded_docs.p'
-model_weights_file = 'models/keras_weights_word_embedding.h5'
-model_file = 'models/keras_model_word_embedding.json'
+dataset_file = '../datasets/word_embedded_docs.p'
+model_weights_file = '../models/keras_weights_word_embedding.h5'
+model_file = '../models/keras_model_word_embedding.json'
 lr = 0.0003
 epochs = 100
 training = False

@@ -15,7 +15,6 @@ word_tokenizer = WordPunctTokenizer()
 join_path = os.path.join
 allowed_lower_chars = set(u'abcdefghijklmnopqrstuvwxyz1234567890àèéùòì')
 allowed_lower_chars_punct = set(u'abcdefghijklmnopqrstuvwxyz1234567890àèéùòì!#$%&()*"+,-./:;<=>?@[\\]^_\'`{|}~ \t\n\r')
-#stop_words = open('/notebooks/dev/infocamere/git/stop_words.txt').read().split()
 
 def to_utf8(txt):
     """
@@ -197,12 +196,7 @@ def word_tokenize_replace(text):
 def read_codec_file(filename, encoding='utf-8'):
     return codecs.open(filename, encoding=encoding).read()
 
-def substitute_word(word, permitted_words, unknown = 'UNK'):
-    return word if word in permitted_words else unknown
-
-def reduced_sentence(sentence, permitted_words):
-    return [substitute_word(word, permitted_words) for word in sentence]
-            
+'''
 def copy_pdfs_with_few_words(txt_folder, pdf_folder, out_folder, txt_out_folder, thres):
     for txt_file in os.listdir(txt_folder):
         txt = open(join_path(txt_folder,txt_file)).read()
@@ -220,7 +214,7 @@ def copy_pdfs_with_few_words2(txt_folder, pdf_folder, out_folder, txt_out_folder
             pdf_file_name = f[:-3] + 'pdf'
             copyfile(join_path(pdf_folder,pdf_file_name),join_path(out_folder,pdf_file_name))
             os.rename(join_path(txt_folder,f), join_path(txt_out_folder,f))
-
+'''
 
 #copy_pdfs_with_few_words2("out_txt", "res", "scans", "txt_scans", lambda f: os.path.getsize(os.path.abspath(f))<(1024))
 

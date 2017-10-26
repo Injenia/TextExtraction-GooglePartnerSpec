@@ -21,9 +21,9 @@ import pickle
 # fix random seed for reproducibility
 np.random.seed(8)
 
-dataset_file = 'embedded_docs_test_v1.p' #'embedded_docs_with_verb_retry.p' #'embedded_docs_with_verb.p'
-model_weights_file = 'models/keras_weights_verb_deep.h5' #'models/keras_verb_checkpoint.h5' #'models/keras_deep_with_verb_es.h5'
-model_file = 'models/keras_model_deep.json' #'models/keras_model_verb.json' #'models/keras_model.json'
+dataset_file = '../datasets/embedded_docs_test_v1.p' #'embedded_docs_with_verb_retry.p' #'embedded_docs_with_verb.p'
+model_weights_file = '../models/keras_weights_verb_deep.h5' #'models/keras_verb_checkpoint.h5' #'models/keras_deep_with_verb_es.h5'
+model_file = '../models/keras_model_deep.json' #'models/keras_model_verb.json' #'models/keras_model.json'
 lr = 0.0003
 epochs = 100
 training = True

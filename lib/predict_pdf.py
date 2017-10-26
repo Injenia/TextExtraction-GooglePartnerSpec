@@ -35,10 +35,10 @@ def predict_documents_txt(filenames, gensim_model, keras_model, permitted_words)
     txts = [open(filename).read() for filename in filenames]
     return predict_documents_str(filenames, txts, gensim_model, keras_model, permitted_words)
 
-def load_models(gensim_file='models/gensim_model_5000.d2v', 
-                keras_model_file='models/keras_model.json',
-                keras_weights_file='models/keras_weights_5000.h5',
-                permitted_words_file='first_5000_words.json'):
+def load_models(gensim_file='../models/gensim_model_5000.d2v', 
+                keras_model_file='../models/keras_model.json',
+                keras_weights_file='../models/keras_weights_5000.h5',
+                permitted_words_file='../dictionaries/first_5000_words.json'):
     models = {}
     models['gensim_model'] = Doc2Vec.load(gensim_file)
 
@@ -57,10 +57,10 @@ def predict_document_str(txt, gensim_model, keras_model, permitted_words):
     padded_data = sequence.pad_sequences([embedded_txt], maxlen=200, padding="pre", truncating="post", value=0.0, dtype='float32')
     return keras_model.predict(padded_data, verbose=0)[0,0]
 
-def load_prediction_models(gensim_file='models/gensim_model_5000.d2v', 
-                           keras_model_file='models/keras_model.json',
-                           keras_weights_file='models/keras_weights_5000.h5',
-                           permitted_words_file='first_5000_words.json'):
+def load_prediction_models(gensim_file='../models/gensim_model_5000.d2v', 
+                           keras_model_file='../models/keras_model.json',
+                           keras_weights_file='../models/keras_weights_5000.h5',
+                           permitted_words_file='../dictionaries/first_5000_words.json'):
     return partial(predict_documents_pdf, **load_models(gensim_file, keras_model_file, keras_weights_file, permitted_words_file))
     
 def predictions_dataframe(pdf_names, filtered_filenames, predictions, csv_out_file, labels_map=['NON COSTITUTIVO', 'COSTITUTIVO']):

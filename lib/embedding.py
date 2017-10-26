@@ -141,9 +141,9 @@ def build_dataset(model, df, permitted_words):
 
 if __name__ == '__main__':
     csv_filename = '/notebooks/dev/infocamere/atti2.csv'
-    model_filename = '../models/gensim_5000_model_with_verb.d2v'
-    permitted_words_filename = '../first_5000_words_with_verb_cost.json'
-    dataset_filename = "../embedded_docs_with_verb_retry.p"
+    model_filename = '../../models/gensim_5000_model_with_verb.d2v'
+    permitted_words_filename = '../../dictionaries/first_5000_words_with_verb_cost.json'
+    dataset_filename = "../../datasets/embedded_docs_with_verb_retry.p"
     
     # Creazione del dataset come sottoinsieme bilanciato dei documenti
     df = pd.read_csv(csv_filename, encoding='utf-8')
@@ -184,10 +184,13 @@ if __name__ == '__main__':
     #model = build_embedding(None)
     del splitted_sentences
     
+    # THIS DOESN'T WORK SO WELL!!!!!!!!!!!!! USE THE GENERATIONS IN THE JUPYTER build_dataset
+    
+    '''
     docs, labels = build_dataset(model, df_balanced, permitted_words)
     label_map = {'costitutivo':1, 'non_costitutivo':0}
     labels_n = [label_map[l] for l in labels]
 
     with open(dataset_filename, "w") as fout:
         pickle.dump([docs, labels_n], fout)
-
+    '''
