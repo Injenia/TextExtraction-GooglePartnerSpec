@@ -21,9 +21,17 @@ prediction_models_verb = {'gensim_file':'../models/gensim_5000_model_with_verb.d
                          'keras_weights_file':'../models/keras_new_weights_with_verb_es.h5',    
                          'permitted_words_file':'../dictionaries/first_5000_words_with_verb_cost.json'}
 
+prediction_models_we = {'keras_model_file':'../models/keras_model_word_embedding.json',
+            'keras_weights_file':'../models/keras_weights_word_embedding.h5',
+            'reduced_dictionary_file':'../dictionaries/reduced_dictionary_cost.json'}
+
+use_word_embedding = True
 
 def load_predictor_extractor():
-    models = pp.load_models(**prediction_models)           
+    if use_word_embedding:
+        models = pp.load_models_we(**prediction_models_we)
+    else:
+        models = pp.load_models(**prediction_models)           
     name_extractor = ep.NotaioNameExtractor.load_from_file()
     pe = ep.PartsExtraction.load_from_files('../models/extraction_model_30_all.json',
                                      '../models/extraction_weights_30_all.h5',

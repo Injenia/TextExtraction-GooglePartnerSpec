@@ -10,7 +10,8 @@ from keras.optimizers import Adam, RMSprop
 from keras.preprocessing import sequence
 from sklearn.model_selection import train_test_split
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from lib.pretty_testing import predict_test
+from lib.pretty_testing import predict_test #, roc_curve_plot
+from sklearn.metrics import roc_curve, auc
 
 import numpy as np
 import pickle
@@ -24,6 +25,7 @@ np.random.seed(8)
 dataset_file = '../datasets/word_embedded_docs.p'
 model_weights_file = '../models/keras_weights_word_embedding.h5'
 model_file = '../models/keras_model_word_embedding.json'
+roc_fig_filename = '../log_figs/roc_curve.png'
 lr = 0.0003
 epochs = 100
 training = False
@@ -77,11 +79,18 @@ else:
     print(model.summary())
     
 # Final evaluation of the model
-scores = model.evaluate(X_test, y_test, verbose=0)
-print("Accuracy: %.2f%%" % (scores[1]*100))
+#scores = model.evaluate(X_test, y_test, verbose=0)
+#print("Accuracy: %.2f%%" % (scores[1]*100))
 
-# serialize weights to HDF5
-model.save_weights(model_weights_file)
+# serialize weights to HDF5 (there's the checkpoint)
+#model.save_weights(model_weights_file)
 
 # test
 predict_test(model, X_test, y_test, ['non_cost', 'cost'])
+scores = model.predict(X_test, verbose=0).reshape(-1)
+
+fpr, tpr, _ = roc_curve(y_test, scores, pos_label=1)
+roc_auc = auc(fpr, tpr)
+print('\nArea under ROC curve: {}'.format(roc_auc))
+#fig = roc_curve_plot(fpr, tpr, roc_auc)
+#fig.savefig(roc_fig_filename)

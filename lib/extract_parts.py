@@ -170,15 +170,19 @@ def build_json_response(prediction=0, sensato=False, sentences=[], probas=[],  n
     return res
 
 class PredictorExtractor(object):
-    def __init__(self, predictor_models, parts_extractor, name_extractor):
+    def __init__(self, predictor_models, parts_extractor, name_extractor, word_embedding = False):
         self.predictor_models = predictor_models
         self.parts_extractor = parts_extractor
         self.name_extractor = name_extractor
+        self.we = word_embedding
 
     def predict_extract_pdf_json(self, filename):
         txt = te.extract_text(filename, do_ocr=False, pages=-1)
         
-        prediction = float(pp.predict_document_str(txt, **self.predictor_models))
+        if self.we:
+            prediction = float(pp.predict_document_str_we(txt, **self.predictor_models))
+        else:
+            prediction = float(pp.predict_document_str(txt, **self.predictor_models))
         sensato = is_valid_nl(txt)
         
         if prediction <0.5 or not sensato:

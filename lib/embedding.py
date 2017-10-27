@@ -99,6 +99,7 @@ def embed_document_p(doc, model, permitted_words):
 class DictionaryMapper(object):
     def __init__(self, reduced_dictionary):
         self.reduced_dictionary = reduced_dictionary
+        self.permitted_words = set(reduced_dictionary.keys())
         
     def fit_texts(self, texts, maxwords):
         fnw = first_n_words(texts, maxwords)
@@ -107,9 +108,7 @@ class DictionaryMapper(object):
         self.reduced_dictionary = build_dictionary(reduced_texts, start_index=1)
     
     def map_to_ints(self, texts):
-        reduced_texts = list(reduce_dictionary(texts, set(self.reduced_dictionary.keys()), min_words=1))
-        #int_texts = [[self.reduced_dictionary[w] for w in text] for text in reduced_texts]
-        #return int_texts
+        reduced_texts = reduce_dictionary(texts, self.permitted_words, min_words=1)
         for text in reduced_texts:
             yield [self.reduced_dictionary[w] for w in text]
 

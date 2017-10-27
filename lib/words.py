@@ -172,7 +172,7 @@ def index_ignore_whitespaces(s, sub):
         return -1
     return idxs[i]
 
-def word_tokenize_replace(text):
+def word_tokenize_replace(text, maxtokens=-1):
     """
     Tokenizes separating words and punctuation.
     It does the following substitutions:
@@ -186,6 +186,8 @@ def word_tokenize_replace(text):
     cleaned_string = clean_string_not_compressed(text)
     clean_text = replace_evil_dots_and_underscores_newline(cleaned_string, rep=' ').lower()
     tokens = t.tokenize(clean_text)
+    if maxtokens>0:
+        tokens = tokens[:maxtokens]
     sw_tokens = (w if w not in stop_words else u"STOPWORD" for w in tokens)
     no_dots_tokens = (w if w != u'.' else u'DOT' for w in sw_tokens)
     no_punct_tokens = (w if w[0] not in punctuation else u'PUNCT' for w in no_dots_tokens)

@@ -27,14 +27,15 @@ def predict_documents_pdf(filenames, gensim_model, keras_model, permitted_words,
     txts = [te.extract_text(filename, do_ocr) for filename in filenames]
     return predict_documents_str(filenames, txts, gensim_model, keras_model, permitted_words)
 
-def predict_documents_str_we(filenames, txts, keras_model, reduced_dictionary):
+def predict_documents_str_we(filenames, txts, keras_model, reduced_dictionary, maxlen=500):
     filtered_filenames = [f for f,t in zip(filenames, txts) if (t != None and len(t)>0)]
     not_empty_txts =  [t for t in txts if  (t != None and len(t)>0)]
     if len(filtered_filenames) == 0:
         return [], []
 
-    tokenized_txts = (word_tokenize_replace(txt) for txt in not_empty_txts)
+    tokenized_txts = (word_tokenize_replace(txt, maxlen) for txt in not_empty_txts)
     d = em.DictionaryMapper(reduced_dictionary)
+    
     int_txts = list(d.map_to_ints(tokenized_txts))
     padded_data = sequence.pad_sequences(int_txts, maxlen, padding="pre", truncating="post", value=0, dtype='uint32')
     probs = keras_model.predict_proba(padded_data, verbose=0)
@@ -65,23 +66,23 @@ def load_models(gensim_file='../models/gensim_model_5000.d2v',
     return models
 
 def load_models_we(keras_model_file, keras_weights_file, reduced_dictionary_file):
+    models = {}
     with open(keras_model_file) as f:
         models['keras_model'] = model_from_json(f.read())
     models['keras_model'].load_weights(keras_weights_file)
 
-    with open(permitted_words_file) as f:
-        models['reduced_dictionary'] = set(json.load(f))
+    with open(reduced_dictionary_file) as f:
+        models['reduced_dictionary'] = json.load(f)
     return models
 
 def predict_document_str(txt, gensim_model, keras_model, permitted_words):
     split_txt = tokenize_doc(txt)
-    #filtered_txt = list(reduce_dictionary(split_txt, permitted_words))
     embedded_txt = embed_document(gensim_model, split_txt, permitted_words)
     padded_data = sequence.pad_sequences([embedded_txt], maxlen=200, padding="pre", truncating="post", value=0.0, dtype='float32')
     return keras_model.predict(padded_data, verbose=0)[0,0]
 
-def predict_document_str_we(txt, keras_model, permitted_words):
-    tokenized_txt = word_tokenize_replace(txt)
+def predict_document_str_we(txt, keras_model, reduced_dictionary, maxlen = 500):
+    tokenized_txt = word_tokenize_replace(txt, maxlen)
     d = em.DictionaryMapper(reduced_dictionary)
     int_txt = next(d.map_to_ints([tokenized_txt]))
     padded_data = sequence.pad_sequences([int_txt], maxlen, padding="pre", truncating="post", value=0, dtype='uint32')
