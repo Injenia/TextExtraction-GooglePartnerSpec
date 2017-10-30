@@ -27,8 +27,8 @@ def filter_matches_errors(ml):
 
 def matches_list(lines):
     num_regex = ur'(?u)^-*\s*(\d{1,2})[°\.\)](?!\d)'
-    art_regex = r'(?i)^(?:- )?art\D{0,10}(\d{1,2})'
-    roman_art_regex = r'(?i)^-*\s*?art\w*\.?\s+((?:ix)?(?:iv)?x?v?i{0,3})\s?'
+    art_regex = r'(?i)^-*_*\s*art\D{0,10}(\d{1,2})(?!\d)'
+    roman_art_regex = r'(?i)^-*\s*?art\w*\.?\s+((?:ix)?x?(?:iv)?v?i{0,3})\s?'
 
     nm = index_matches(num_regex, lines)
     num_matches = list(changes_only_iter(nm, operator.itemgetter(1)))
