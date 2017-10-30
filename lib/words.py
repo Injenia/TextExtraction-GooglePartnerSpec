@@ -91,6 +91,13 @@ def split_sents(doc):
     """
     return [s for s in re.split(u'[.;!?]', doc) if len(s)>0]
 
+def split_sents_newline(doc):
+    """
+    Basic way to split sentences with punctuation
+    """
+    sents = [s for s in re.split(u'(\.\n|;\n|:\n|\.\s*-+|\.\s*_+|;\s*_+|;\s*-+|:\s*_+|:\s*_+)', doc)] # if len(s)>2]
+    return [s for s in sents if len(re.findall(ur'[a-zA-Z0-9]', s)) > 0]
+
 def replace_evil_dots_and_underscores(txt, rep=r''):
     """
     Eliminates dots in abbreviations and numbers, in order to split sentences on dots (that really divide sentences).
@@ -159,7 +166,9 @@ def tokenize_doc(doc, min_words=2, replace_nums=True, rm_stop_words=True, rep=r'
     return tokenize_sentences(sents, min_words, replace_nums, rm_stop_words)
 
 def filter_indexes(pred, l):
-    fl = ((i,e) for i,e in enumerate(l) if pred(e))
+    fl = [(i,e) for i,e in enumerate(l) if pred(e)]
+    if len(fl) == 0:
+        return ([],[])
     return tuple(list(e) for e in zip(*fl))
 
 def index_ignore_whitespaces(s, sub):
