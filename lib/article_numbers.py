@@ -1,3 +1,8 @@
+# This Python file uses the following encoding: utf-8
+import re
+import roman
+import operator
+
 def index_matches(regex, lines, conv_ints=True):
     matches = (re.findall(regex, l) for l in lines)
     filt_matches = [(i,int(m[0]) if conv_ints else m[0]) for i,m in enumerate(matches) if m and len(m[0])>0]
