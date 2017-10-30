@@ -18,6 +18,8 @@ def changes_only_iter(l, key_fn = lambda x:x):
             yield i
 
 def filter_matches_errors(ml):
+    if len(ml) < 2:
+        return ml
     res = [ml[0]]
     for i in range(1, len(ml)-1):
         if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1):
@@ -29,33 +31,38 @@ def matches_list(lines):
     num_regex = ur'(?u)^-*\s*(\d{1,2})[°\.\)](?!\d)'
     art_regex = r'(?i)^-*_*\s*art\D{0,10}(\d{1,2})(?!\d)'
     roman_art_regex = r'(?i)^-*\s*?art\w*\.?\s+((?:ix)?x?(?:iv)?v?i{0,3})\s?'
-
+    roman_num_regex = r'(?i)^((?:ix)?x{0,3}(?:ix)?(?:iv)?v?i{0,3})(?:\)|\.)\s?'
+    
     nm = index_matches(num_regex, lines)
     num_matches = list(changes_only_iter(nm, operator.itemgetter(1)))
 
     im = index_matches(art_regex, lines)
 
     imr_r = index_matches(roman_art_regex, lines, conv_ints=False)
-    #print(imr_r)
-    imr = [(i, roman.fromRoman(r)) for i,r in imr_r]
+    imr = [(i, roman.fromRoman(r.upper())) for i,r in imr_r]
+    
+    imr_r_n = index_matches(roman_num_regex, lines, conv_ints=False)
+    imr_n = [(i, roman.fromRoman(r.upper())) for i,r in imr_r_n]
 
-    matches = sorted(num_matches+im+ imr, key=operator.itemgetter(0))
+    matches = sorted(num_matches + im + imr + imr_n, key=operator.itemgetter(0))
     return matches
             
 def end_statuto(lines, matches):
     found = False
+    found_num = -1
     end_statuto_line = ''
     if len(matches) == 0:
         return ''
     im = iter(matches)
     _, t = next(im)
     for i, n in im:
-        if found == True and n < t:
+        if found == True and n != t + 1 and n == found_num + 1:
             end_statuto_line = lines[i]
             found = False
         if n < t:
             #print(n)
             found = True
+            found_num = t
         t = n
     return end_statuto_line
 
