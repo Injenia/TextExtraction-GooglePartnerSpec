@@ -231,3 +231,18 @@ def write_gcs_file(project,path,content):
     blob = storage.blob.Blob(filepath,bucket)
     blob.upload_from_string(content)   
     
+#paolo
+def download_from_storage(project, gs_uri, destination_file_name):
+    splitted = gs_uri.split('/')
+    bucket_name = splitted[2]
+    file_path = '/'.join(splitted[3:])
+    storage_client = storage.Client(project)
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(file_path)
+    ensure_dir_exists(destination_file_name)
+    blob.download_to_filename(destination_file_name)
+    
+def download_from_storage_if_not_present(project, gs_uri, destination_file_name, refresh=False):
+    if refresh or not os.path.exists(destination_file_name):
+        download_from_storage(project, gs_uri, destination_file_name)
+    
