@@ -123,6 +123,17 @@ def replace_evil_dots_and_underscores_newline(txt, rep=r''):
     no_underscores = re.sub(r'_', ''+rep, no_maiusc)
     return no_underscores
 
+def replace_evil_dots(txt, rep=r''):
+    """
+    Eliminates dots in abbreviations and numbers, in order to split sentences on dots (that really divide sentences).
+    It is used for instance in extract_statuto.py
+    """
+    no_abbr = re.sub(u'([bcdfghjklmnpqrstvwxyz])\.(?!\n)', r'\1'+rep, txt)
+    no_nums = re.sub(u'(\d)\.(?!\n)', r'\1'+rep, no_abbr)
+    no_nums = re.sub(u'\.(\d)', rep + r'\1', no_nums)
+    no_maiusc = re.sub(u'([A-Z])\.(?!\n)', r'\1'+rep, no_nums)
+    return no_maiusc
+
 def rm_stop_words(words):
     return [word for word in words if not (word in stop_words)]
 
