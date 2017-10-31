@@ -22,7 +22,7 @@ def filter_matches_errors(ml):
         return ml
     res = [ml[0]]
     for i in range(1, len(ml)-1):
-        if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1):
+        if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1) and ml[i][1]!=1:
             res.append(ml[i])
     res.append(ml[-1])
     return res
@@ -45,7 +45,7 @@ def matches_list(lines):
     imr_n = [(i, roman.fromRoman(r.upper())) for i,r in imr_r_n]
 
     matches = sorted(num_matches + im + imr + imr_n, key=operator.itemgetter(0))
-    return matches
+    return matches #list(changes_only_iter(matches, operator.itemgetter(1))))
             
 def end_statuto(lines, matches):
     found = False
@@ -71,3 +71,48 @@ def end_statuto_text(text):
     matches = matches_list(lines)
     corrected_matches = filter_matches_errors(matches)
     return end_statuto(lines, corrected_matches)
+
+
+def text_idx_lines_idx(idx, lines):
+    prev_idx = 0
+    cur_idx = 0
+    i_lines = 0
+    while cur_idx < idx and i_lines < len(lines):
+        prev_idx = cur_idx
+        cur_idx += len(lines[i_lines]) + 1
+        i_lines += 1
+    return i_lines
+
+def num_before(l, n):
+    prev = 0
+    for e in l:
+        if e < n:
+            prev = e
+        else:
+            return prev
+
+def end_statuto_init(lines, matches, init_idx):
+    sent_idx_before = num_before((i for i,e in matches), init_idx)
+    for i,e in matches:
+        if i == sent_idx_before:
+            idx_to_find = e + 1
+            break
+    
+    im = iter(matches)
+    _, t = next(im)
+    
+    for i,e in matches:
+        if e == idx_to_find and e != t + 1:
+            return lines[i]
+        t = e
+    return ''
+
+def end_statuto_init_text(text, init_statuto_str):
+    lines = [l.strip() for l in text.split('\n') if len(l.strip())>0]
+    matches = matches_list(lines)
+    corrected_matches = filter_matches_errors(matches)
+    
+    i_text = text.index(init_statuto_str)
+    il = text_idx_lines_idx(i_text, lines)
+    
+    return end_statuto_init(lines, corrected_matches, il)
