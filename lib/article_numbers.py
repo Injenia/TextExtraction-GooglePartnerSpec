@@ -22,7 +22,7 @@ def filter_matches_errors(ml):
         return ml
     res = [ml[0]]
     for i in range(1, len(ml)-1):
-        if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1) and ml[i][1]!=1:
+        if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1) or ml[i][1]==1:
             res.append(ml[i])
     res.append(ml[-1])
     return res
@@ -92,12 +92,15 @@ def num_before(l, n):
             return prev
 
 def end_statuto_init(lines, matches, init_idx):
+    idx_to_find = -1
     sent_idx_before = num_before((i for i,e in matches), init_idx)
     for i,e in matches:
         if i == sent_idx_before:
             idx_to_find = e + 1
             break
     
+    if len(matches) == 0:
+        return ''
     im = iter(matches)
     _, t = next(im)
     
