@@ -2,6 +2,7 @@
 import re
 import roman
 import operator
+import bisect
 
 def index_matches(regex, lines, conv_ints=True):
     matches = (re.findall(regex, l) for l in lines)
@@ -22,7 +23,7 @@ def filter_matches_errors(ml):
         return ml
     res = [ml[0]]
     for i in range(1, len(ml)-1):
-        if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1) or ml[i][1]==1:
+        if (ml[i][1] == ml[i-1][1]+1) or (ml[i][1] == ml[i+1][1]-1) and ml[i][1]!=1:
             res.append(ml[i])
     res.append(ml[-1])
     return res
@@ -72,7 +73,6 @@ def end_statuto_text(text):
     corrected_matches = filter_matches_errors(matches)
     return end_statuto(lines, corrected_matches)
 
-
 def text_idx_lines_idx(idx, lines):
     prev_idx = 0
     cur_idx = 0
@@ -83,6 +83,7 @@ def text_idx_lines_idx(idx, lines):
         i_lines += 1
     return i_lines
 
+'''
 def num_before(l, n):
     prev = 0
     for e in l:
@@ -90,17 +91,18 @@ def num_before(l, n):
             prev = e
         else:
             return prev
+'''        
+
+def num_before(l, n):
+    return l[bisect.bisect_left(l,n)-1]
 
 def end_statuto_init(lines, matches, init_idx):
-    idx_to_find = -1
-    sent_idx_before = num_before((i for i,e in matches), init_idx)
+    sent_idx_before = num_before([i for i,e in matches], init_idx)
     for i,e in matches:
         if i == sent_idx_before:
             idx_to_find = e + 1
             break
     
-    if len(matches) == 0:
-        return ''
     im = iter(matches)
     _, t = next(im)
     
