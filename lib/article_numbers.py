@@ -94,6 +94,8 @@ def num_before(l, n):
 '''        
 
 def num_before(l, n):
+    if len(l)==0:
+        return 0
     return l[bisect.bisect_left(l,n)-1]
 
 def end_statuto_init(lines, matches, init_idx):
