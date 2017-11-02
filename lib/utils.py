@@ -1,4 +1,5 @@
 # This Python file uses the following encoding: utf-8
+from __future__ import print_function
 from __future__ import division
 
 from google.cloud import storage
@@ -244,5 +245,6 @@ def download_from_storage(project, gs_uri, destination_file_name):
     
 def download_from_storage_if_not_present(project, gs_uri, destination_file_name, refresh=False):
     if refresh or not os.path.exists(destination_file_name):
+        print("{} not found, downloading from {}".format(destination_file_name, gs_uri))
         download_from_storage(project, gs_uri, destination_file_name)
     

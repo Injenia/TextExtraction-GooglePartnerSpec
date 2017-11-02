@@ -136,8 +136,8 @@ class NotaioNameExtractor(object):
         self.notaio_names = notaio_names
         
     @staticmethod
-    def load_from_file(filename='../extraction/nomi/notari.txt'):
-        nomi_cognomi_list = [w for n in open('../extraction/nomi/notari.txt') for w in n.strip().lower().split(' ')]
+    def load_from_file(filename='../dictionaries/nomi_notai.txt'):
+        nomi_cognomi_list = [w for n in open(filename) for w in n.strip().lower().split(' ')]
         nomi_cognomi_notai = set(join_cognomi_articles(nomi_cognomi_list))
         return NotaioNameExtractor(nomi_cognomi_notai)
 
