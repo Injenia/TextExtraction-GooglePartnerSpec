@@ -5,6 +5,7 @@ from keras.preprocessing import sequence
 import predict_pdf as pp
 import words as wd
 import embedding as em
+import extract_statuto as es
 import text_extraction as te
 import pandas as pd
 import json
@@ -155,7 +156,7 @@ class NotaioNameExtractor(object):
 #def default_parts(labels=['poteri', 'assemblea', 'clausola', 'non_riconducibile', 'scadenza']):
 #    return {k:[] for k in labels}
     
-def build_json_response(prediction=0, sensato=False, sentences=[], probas=[],  nome_notaio='', parts=default_parts, exception=True):
+def build_json_response(prediction=0, sensato=False, sentences=[], statuto=[], probas=[],  nome_notaio='', parts=default_parts, exception=True):
     classes_names = ['non costitutivo', 'costitutivo']
     res = {}
     res['classe'] = classes_names[int(round(prediction))]
@@ -164,6 +165,7 @@ def build_json_response(prediction=0, sensato=False, sentences=[], probas=[],  n
     res['sensato'] = sensato
     #if sensato == True:
     res['frasi'] = sentences_probas(sentences, probas)
+    res['statuto'] = statuto
     res['nome_notaio'] = nome_notaio
     res['parti'] = parts
     res['exception'] = exception
@@ -190,11 +192,16 @@ class PredictorExtractor(object):
         
         sentences = wd.sentences_doc(txt, rep=' ', newline=True)
 
+        try:
+            statuto = es.extract_statuto(txt)
+        except:
+            statuto = []
+        
         pe = self.parts_extractor
         probas = pe.extract_parts_prob(sentences)
         predictions = pe.extract_parts(sentences, post_process=True, probas=probas)
         dict_indexes = pe.extract_parts_dict_indexes(predictions)
 
         name = ' '.join(self.name_extractor.extract_notaio_name(sentences))
-        return build_json_response(prediction, sensato, sentences, probas, name, dict_indexes, False)
+        return build_json_response(prediction, sensato, sentences, statuto, probas, name, dict_indexes, False)
     

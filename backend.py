@@ -16,10 +16,19 @@ prediction_models = {'gensim_file':'../models/gensim_model_5000.d2v',
                      'keras_weights_file':'../models/keras_weights_5000.h5',    
                      'permitted_words_file':'../dictionaries/first_5000_words.json'}
 
+'''
+#NON FUNZIONA 
 prediction_models_verb = {'gensim_file':'../models/gensim_5000_model_with_verb.d2v', 
                          'keras_model_file':'../models/keras_model.json',
                          'keras_weights_file':'../models/keras_new_weights_with_verb_es.h5',    
                          'permitted_words_file':'../dictionaries/first_5000_words_with_verb_cost.json'}
+'''
+
+prediction_models_verb = {'gensim_file':'../models/gensim_5000_model_with_verb.d2v', 
+                          'keras_model_file':'../models/keras_model_retry3.json',
+                          'keras_weights_file':'../models/keras_weights_verb_retry3.h5',
+                          'permitted_words_file':'../dictionaries/first_5000_words_with_verb_cost.json'}
+
 
 prediction_models_we = {'keras_model_file':'../models/keras_model_word_embedding.json',
             'keras_weights_file':'../models/keras_weights_word_embedding.h5',
