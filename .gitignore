@@ -69,3 +69,5 @@ demo/**/work/**
 demo/**/logs/**
 !README.md
 
+# config
+!gs_resource_map.json

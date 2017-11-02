@@ -1,4 +1,5 @@
 # This Python file uses the following encoding: utf-8
+from __future__ import print_function
 from __future__ import division
 
 from google.cloud import storage
@@ -230,4 +231,20 @@ def write_gcs_file(project,path,content):
     bucket = storage.bucket.Bucket(client,name=bucket)
     blob = storage.blob.Blob(filepath,bucket)
     blob.upload_from_string(content)   
+    
+#paolo
+def download_from_storage(project, gs_uri, destination_file_name):
+    splitted = gs_uri.split('/')
+    bucket_name = splitted[2]
+    file_path = '/'.join(splitted[3:])
+    storage_client = storage.Client(project)
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(file_path)
+    ensure_dir_exists(destination_file_name)
+    blob.download_to_filename(destination_file_name)
+    
+def download_from_storage_if_not_present(project, gs_uri, destination_file_name, refresh=False):
+    if refresh or not os.path.exists(destination_file_name):
+        print("{} not found, downloading from {}".format(destination_file_name, gs_uri))
+        download_from_storage(project, gs_uri, destination_file_name)
     
