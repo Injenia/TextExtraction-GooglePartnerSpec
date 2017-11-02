@@ -98,7 +98,8 @@ def predict_and_extract():
             try:
                 res = pred_extract.predict_extract_pdf_dict(filename)
             except Exception as e:
-                return jsonify(ep.build_json_response())
+                print(e)
+                return jsonify(ep.build_response_dict())
             finally:
                 os.remove(filename)
             

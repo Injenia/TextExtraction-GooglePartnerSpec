@@ -197,7 +197,7 @@ class PredictorExtractor(object):
         sensato = is_valid_nl(txt)
         
         if prediction <0.5 or not sensato:
-            return build_json_response(prediction, exception=False)
+            return build_response_dict(prediction, exception=False)
         
         sentences = wd.sentences_doc(txt, rep=' ', newline=True)
 
