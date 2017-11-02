@@ -62,10 +62,10 @@ def extract_statuto(text):
 
     if index > -1 and fine > -1:
         to_write = [wd.compress_blanks(s.strip()) for s in sents[inizio+1:fine]]
-        return(wd.compress_blanks(sents[inizio][index:]) + to_write + wd.compress_blanks(sents[fine][:index_fine]))
+        return([wd.compress_blanks(sents[inizio][index:])] + to_write + [wd.compress_blanks(sents[fine][:index_fine])])
     elif index > -1 and fine == -1:
         to_write = [wd.compress_blanks(s.strip()) for s in sents[inizio+1:]]
-        return(wd.compress_blanks(sents[inizio][index:]) + to_write)
+        return([wd.compress_blanks(sents[inizio][index:])] + to_write)
     else:
         # Statuto non trovato
         return []

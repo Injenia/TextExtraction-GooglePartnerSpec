@@ -194,7 +194,8 @@ class PredictorExtractor(object):
 
         try:
             statuto = es.extract_statuto(txt)
-        except:
+        except Exception as e:
+            print ('eccezione:', e)
             statuto = []
         
         pe = self.parts_extractor

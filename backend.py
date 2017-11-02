@@ -45,7 +45,7 @@ def load_predictor_extractor():
     pe = ep.PartsExtraction.load_from_files('../models/extraction_model_30_all.json',
                                      '../models/extraction_weights_30_all.h5',
                                      '../dictionaries/first_5000_words_extraction.json')
-    return ep.PredictorExtractor(models, pe, name_extractor)
+    return ep.PredictorExtractor(models, pe, name_extractor, use_word_embedding)
 
 app = Flask(__name__)
 CORS(app)
