@@ -8,8 +8,10 @@ import embedding as em
 import extract_statuto as es
 import text_extraction as te
 import pandas as pd
+import numpy as np
 import json
 from utils import uniq_list
+from collections import OrderedDict
 import re
 
 default_parts = {k:[] for k in ['poteri', 'assemblea', 'clausola', 'non_riconducibile', 'scadenza']}
@@ -69,7 +71,9 @@ class PartsExtraction(object):
         padded_data = sequence.pad_sequences(int_sentences, self._maxlen, padding="pre", truncating="post", value=0, dtype='uint32')
         return self._model.predict(padded_data)
     
-    def extract_parts(self, sentences, post_process=False, probas = []):
+    def extract_parts(self, sentences, post_process=False, probas = np.array([])):
+        if len(sentences) == 0:
+            return []
         if len(probas)==0:
             probas = self.extract_parts_prob(sentences) 
         predictions = probas.argmax(axis=-1)
@@ -156,7 +160,7 @@ class NotaioNameExtractor(object):
 #def default_parts(labels=['poteri', 'assemblea', 'clausola', 'non_riconducibile', 'scadenza']):
 #    return {k:[] for k in labels}
     
-def build_json_response(prediction=0, sensato=False, sentences=[], statuto=[], probas=[],  nome_notaio='', parts=default_parts, exception=True):
+def build_response_dict(prediction=0, sensato=False, sentences=[], statuto=[], probas=[],  nome_notaio='', parts=default_parts, exception=True):
     classes_names = ['non costitutivo', 'costitutivo']
     res = {}
     res['classe'] = classes_names[int(round(prediction))]
@@ -172,19 +176,24 @@ def build_json_response(prediction=0, sensato=False, sentences=[], statuto=[], p
     return res
 
 class PredictorExtractor(object):
-    def __init__(self, predictor_models, parts_extractor, name_extractor, word_embedding = False):
+    def __init__(self, predictor_fn, predictor_models, parts_extractor, name_extractor): #, word_embedding = False):
+        self.predict = predictor_fn
         self.predictor_models = predictor_models
         self.parts_extractor = parts_extractor
         self.name_extractor = name_extractor
-        self.we = word_embedding
+        
+    def extract_parts_pdf(self, filename):
+        txt = te.extract_text(filename, do_ocr=False, pages=-1)
+        sentences = wd.sentences_doc(txt, rep=' ', newline=True)
+        pe = self.parts_extractor
+        probas = pe.extract_parts_prob(sentences)
+        predictions = pe.extract_parts(sentences, post_process=True, probas=probas)
+        return list(zip(sentences, predictions, *zip(*probas)))
 
-    def predict_extract_pdf_json(self, filename):
+    def predict_extract_pdf_dict(self, filename):
         txt = te.extract_text(filename, do_ocr=False, pages=-1)
         
-        if self.we:
-            prediction = float(pp.predict_document_str_we(txt, **self.predictor_models))
-        else:
-            prediction = float(pp.predict_document_str(txt, **self.predictor_models))
+        prediction = float(self.predict(txt, **self.predictor_models))
         sensato = is_valid_nl(txt)
         
         if prediction <0.5 or not sensato:
@@ -204,5 +213,5 @@ class PredictorExtractor(object):
         dict_indexes = pe.extract_parts_dict_indexes(predictions)
 
         name = ' '.join(self.name_extractor.extract_notaio_name(sentences))
-        return build_json_response(prediction, sensato, sentences, statuto, probas, name, dict_indexes, False)
+        return build_response_dict(prediction, sensato, sentences, statuto, probas, name, dict_indexes, False)
     

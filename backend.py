@@ -4,6 +4,7 @@ import os
 from lib import predict_pdf as pp
 from lib import extract_parts as ep
 from lib import text_extraction as te
+from lib.utils import download_from_storage_if_not_present
 import json
 from flask import Flask
 from flask import request
@@ -36,16 +37,30 @@ prediction_models_we = {'keras_model_file':'../models/keras_model_word_embedding
 
 use_word_embedding = True
 
+
+extraction_models = {
+    'keras_model_filename':'../models/extraction_model_30_all.json',
+    'keras_weights_filename':'../models/extraction_weights_30_all.h5',
+    'reduced_dict_filename':'../dictionaries/first_5000_words_extraction.json'
+}
+
 def load_predictor_extractor():
+    # Download resources if not found
+    with open("gs_resource_map.json") as f:
+        gs_map = json.load(f)
+
+    for k,v in gs_map.items():
+        download_from_storage_if_not_present("infocamere-poc", v, k)
+        
     if use_word_embedding:
+        prediction_fn = pp.predict_document_str_we
         models = pp.load_models_we(**prediction_models_we)
     else:
+        prediction_fn = pp.predict_document_str
         models = pp.load_models(**prediction_models)           
     name_extractor = ep.NotaioNameExtractor.load_from_file()
-    pe = ep.PartsExtraction.load_from_files('../models/extraction_model_30_all.json',
-                                     '../models/extraction_weights_30_all.h5',
-                                     '../dictionaries/first_5000_words_extraction.json')
-    return ep.PredictorExtractor(models, pe, name_extractor, use_word_embedding)
+    pe = ep.PartsExtraction.load_from_files(**extraction_models)
+    return ep.PredictorExtractor(prediction_fn, models, pe, name_extractor)
 
 app = Flask(__name__)
 CORS(app)
@@ -81,7 +96,7 @@ def predict_and_extract():
                 o.write(content)
             
             try:
-                res = pred_extract.predict_extract_pdf_json(filename)
+                res = pred_extract.predict_extract_pdf_dict(filename)
             except Exception as e:
                 return jsonify(ep.build_json_response())
             finally:
