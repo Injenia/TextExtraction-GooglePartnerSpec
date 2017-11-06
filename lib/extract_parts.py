@@ -87,6 +87,13 @@ class PartsExtraction(object):
             preds = predictions
         return [self._labels[i] for i in preds]
     
+    def extract_parts_pdf(self, filename):
+        txt = te.extract_text(filename, do_ocr=False, pages=-1)
+        sentences = wd.sentences_doc(txt, rep=' ', newline=True)
+        probas = self.extract_parts_prob(sentences)
+        predictions = self.extract_parts(sentences, post_process=True, probas=probas)
+        return list(zip(sentences, predictions, *zip(*probas)))
+    
     def extract_parts_dict(self, sentences, predictions=None):
         predictions = self.extract_parts(sentences) if predictions == None else predictions
         df = pd.DataFrame({'sentence':sentences,'prediction':predictions})
@@ -182,13 +189,9 @@ class PredictorExtractor(object):
         self.parts_extractor = parts_extractor
         self.name_extractor = name_extractor
         
+    # Just a Facade
     def extract_parts_pdf(self, filename):
-        txt = te.extract_text(filename, do_ocr=False, pages=-1)
-        sentences = wd.sentences_doc(txt, rep=' ', newline=True)
-        pe = self.parts_extractor
-        probas = pe.extract_parts_prob(sentences)
-        predictions = pe.extract_parts(sentences, post_process=True, probas=probas)
-        return list(zip(sentences, predictions, *zip(*probas)))
+        return self.parts_extractor.extract_parts_pdf(filename)
 
     def predict_extract_pdf_dict(self, filename):
         txt = te.extract_text(filename, do_ocr=False, pages=-1)

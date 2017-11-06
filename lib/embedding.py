@@ -97,7 +97,7 @@ def embed_document_p(doc, model, permitted_words):
     return [sentence_vector(model, sentence, permitted_words) for sentence in doc]
 
 class DictionaryMapper(object):
-    def __init__(self, reduced_dictionary):
+    def __init__(self, reduced_dictionary=dict()):
         self.reduced_dictionary = reduced_dictionary
         self.permitted_words = set(reduced_dictionary.keys())
         
@@ -106,6 +106,7 @@ class DictionaryMapper(object):
         permitted_words = set(e[0] for e in fnw)
         reduced_texts = list(reduce_dictionary(texts, permitted_words, min_words=1))
         self.reduced_dictionary = build_dictionary(reduced_texts, start_index=1)
+        self.permitted_words = set(self.reduced_dictionary.keys())
     
     def map_to_ints(self, texts):
         reduced_texts = reduce_dictionary(texts, self.permitted_words, min_words=1)
