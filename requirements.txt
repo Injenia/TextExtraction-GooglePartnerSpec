@@ -8,3 +8,5 @@ tensorflow
 gensim
 keras
 google-cloud-storage
+flask
+flask-cors
