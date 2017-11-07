@@ -1,5 +1,8 @@
-# Installazione dipendenze
-Nella cartella:
+# Prerequisiti
+google cloud sdk installato e configurato con infocamere-poc come progetto corrente.
+opzionale per OCR: imagemagick (linux)
+
+# Installazione dipendenze python
 pip install -r requirements.txt
 
 # Demo
