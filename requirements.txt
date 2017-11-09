@@ -3,6 +3,7 @@ scipy
 joblib
 scikit-learn[alldeps]
 nltk
+roman
 pandas
 tensorflow
 gensim
