@@ -1,16 +1,18 @@
 from __future__ import print_function
 from __future__ import division
+from __future__ import absolute_import
+
 from keras.models import model_from_json
 from keras.preprocessing import sequence
-import predict_pdf as pp
-import words as wd
-import embedding as em
-import extract_statuto as es
-import text_extraction as te
+import lib.predict_pdf as pp
+import lib.words as wd
+import lib.embedding as em
+import lib.extract_statuto as es
+import lib.text_extraction as te
+from lib.utils import uniq_list
 import pandas as pd
 import numpy as np
 import json
-from utils import uniq_list
 from collections import OrderedDict
 import re
 

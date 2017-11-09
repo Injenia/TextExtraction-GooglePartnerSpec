@@ -1,11 +1,12 @@
 # This Python file uses the following encoding: utf-8
+from __future__ import absolute_import
 from lib.words import splitted_words
 
 from google.cloud import vision
 from google.cloud.vision import types
 
 from subprocess import call
-from utils import rm_dir, batch_list
+from lib.utils import rm_dir, batch_list
 
 import textract
 import os

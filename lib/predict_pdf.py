@@ -1,13 +1,15 @@
 # This Python file uses the following encoding: utf-8
-from embedding import embed_document, reduce_dictionary
-import embedding as em
+from __future__ import absolute_import
+
+from lib.embedding import embed_document, reduce_dictionary
+import lib.embedding as em
 from keras.preprocessing import sequence
 from keras.models import model_from_json
 from collections import OrderedDict
 from gensim.models import Doc2Vec
-from words import tokenize_doc, word_tokenize_replace
+from lib.words import tokenize_doc, word_tokenize_replace
 from functools import partial
-import text_extraction as te
+import lib.text_extraction as te
 import pandas as pd
 import json
 
