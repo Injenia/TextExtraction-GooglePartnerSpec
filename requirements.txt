@@ -5,7 +5,7 @@ scikit-learn[alldeps]
 nltk
 roman
 pandas
-tensorflow
+tensorflow-gpu
 gensim
 keras
 google-cloud-storage
