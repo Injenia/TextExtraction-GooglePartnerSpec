@@ -23,5 +23,7 @@
     "../models/keras_weights_5000.h5":"gs://bckp-infocamere-models/models/keras_weights_5000.h5",
 
     "../models/keras_model_word_embedding.json":"gs://bckp-infocamere-models/models/keras_model_word_embedding.json",
-    "../models/keras_weights_word_embedding.h5":"gs://bckp-infocamere-models/models/keras_weights_word_embedding.h5"
+    "../models/keras_weights_word_embedding.h5":"gs://bckp-infocamere-models/models/keras_weights_word_embedding.h5",
+    
+    "../samples/5115047380001.json":"gs://bckp-infocamere-models/samples/5115047380001.json"
 }
