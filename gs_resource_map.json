@@ -1,29 +1,27 @@
 {
-    "../dictionaries/first_5000_words.json":"gs://bckp-infocamere-models/dictionaries/first_5000_words.json",
-    "../dictionaries/first_5000_words_with_verb_cost.json":"gs://bckp-infocamere-models/dictionaries/first_5000_words_with_verb_cost.json",
-    "../dictionaries/first_5000_words_extraction.json":"gs://bckp-infocamere-models/dictionaries/first_5000_words_extraction.json",
+    "../dictionaries/first_5000_words.json":"gs://infocamere/dictionaries/first_5000_words.json",
+    "../dictionaries/first_5000_words_with_verb_cost.json":"gs://infocamere/dictionaries/first_5000_words_with_verb_cost.json",
+    "../dictionaries/first_5000_words_extraction.json":"gs://infocamere/dictionaries/first_5000_words_extraction.json",
 
-    "../dictionaries/nomi_notai.txt":"gs://bckp-infocamere-models/dictionaries/nomi_notai.txt",
+    "../dictionaries/nomi_notai.txt":"gs://infocamere/dictionaries/nomi_notai.txt",
 
-    "../dictionaries/reduced_dictionary_cost.json":"gs://bckp-infocamere-models/dictionaries/reduced_dictionary_cost.json",
+    "../dictionaries/reduced_dictionary_cost.json":"gs://infocamere/dictionaries/reduced_dictionary_cost.json",
 
-    "../models/extraction_model_30_all.json":"gs://bckp-infocamere-models/models/extraction_model_30_all.json",
-    "../models/extraction_weights_30_all.h5":"gs://bckp-infocamere-models/models/extraction_weights_30_all.h5",
+    "../models/extraction_model_30_all.json":"gs://infocamere/models/extraction_model_30_all.json",
+    "../models/extraction_weights_30_all.h5":"gs://infocamere/models/extraction_weights_30_all.h5",
 
-    "../models/gensim_model_5000.d2v":"gs://bckp-infocamere-models/models/gensim_model_5000.d2v",
-    "../models/gensim_model_5000.d2v.docvecs.doctag_syn0.npy":"gs://bckp-infocamere-models/models/gensim_model_5000.d2v.docvecs.doctag_syn0.npy",
+    "../models/gensim_model_5000.d2v":"gs://infocamere/models/gensim_model_5000.d2v",
+    "../models/gensim_model_5000.d2v.docvecs.doctag_syn0.npy":"gs://infocamere/models/gensim_model_5000.d2v.docvecs.doctag_syn0.npy",
 
-    "../models/gensim_5000_model_with_verb.d2v":"gs://bckp-infocamere-models/models/gensim_5000_model_with_verb.d2v",
-    "../models/gensim_5000_model_with_verb.d2v.docvecs.doctag_syn0.npy":"gs://bckp-infocamere-models/models/gensim_5000_model_with_verb.d2v.docvecs.doctag_syn0.npy",
+    "../models/gensim_5000_model_with_verb.d2v":"gs://infocamere/models/gensim_5000_model_with_verb.d2v",
+    "../models/gensim_5000_model_with_verb.d2v.docvecs.doctag_syn0.npy":"gs://infocamere/models/gensim_5000_model_with_verb.d2v.docvecs.doctag_syn0.npy",
 
-    "../models/keras_model_retry3.json":"gs://bckp-infocamere-models/models/keras_model_retry3.json",
-    "../models/keras_weights_verb_retry3.h5":"gs://bckp-infocamere-models/models/keras_weights_verb_retry3.h5",
+    "../models/keras_model_retry3.json":"gs://infocamere/models/keras_model_retry3.json",
+    "../models/keras_weights_verb_retry3.h5":"gs://infocamere/models/keras_weights_verb_retry3.h5",
 
-    "../models/keras_model.json":"gs://bckp-infocamere-models/models/keras_model.json",
-    "../models/keras_weights_5000.h5":"gs://bckp-infocamere-models/models/keras_weights_5000.h5",
+    "../models/keras_model.json":"gs://infocamere/models/keras_model.json",
+    "../models/keras_weights_5000.h5":"gs://infocamere/models/keras_weights_5000.h5",
 
-    "../models/keras_model_word_embedding.json":"gs://bckp-infocamere-models/models/keras_model_word_embedding.json",
-    "../models/keras_weights_word_embedding.h5":"gs://bckp-infocamere-models/models/keras_weights_word_embedding.h5",
-    
-    "../samples/5115047380001.json":"gs://bckp-infocamere-models/samples/5115047380001.json"
+    "../models/keras_model_word_embedding.json":"gs://infocamere/models/keras_model_word_embedding.json",
+    "../models/keras_weights_word_embedding.h5":"gs://infocamere/models/keras_weights_word_embedding.h5"
 }

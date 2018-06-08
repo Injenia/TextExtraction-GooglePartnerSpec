@@ -1,17 +1,16 @@
-# Prerequisiti
+# Prerequisites
 python 2.7
-google cloud sdk installato e configurato con infocamere-poc come progetto corrente.
-opzionale per OCR: imagemagick (linux)
+google cloud sdk installed & configured with injenia-ricerca as current project.
 
-# Installazione dipendenze python
+# Install Python Dependencies
 pip install -r requirements.txt
-per demo: pip install jupyter
+for the demo: pip install jupyter
 
 # Demo
-Per la demo, aprire in un notebook jupyter il file demo.ipynb
+open jupyter notebook demo.ipynb
 
 # Backend
-Per lanciare il servizio FLASK:
+FLASK:
 
 export FLASK_APP=backend.py
 flask run --host=0.0.0.0

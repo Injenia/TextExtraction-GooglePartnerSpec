@@ -54,14 +54,15 @@ gensim_model*
 *.h5
 
 # pyc
-*.pyc
+**/*.pyc
 
 # models
 *.json
 models/
 
 # logs
-*.log
+**/*.log
+**/*.txt
 
 # DEMO dirs
 demo/**/work/**
@@ -71,3 +72,9 @@ demo/**/logs/**
 
 # config
 !gs_resource_map.json
+
+# other
+files_to_predict
+files_to_predict/*
+**/*.csv
+**/*.pdf
